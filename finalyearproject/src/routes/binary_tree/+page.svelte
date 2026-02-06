@@ -3,5 +3,4 @@
     <a href="/binary_tree">Binary tree</a>
 </nav>
 
-<h1>Homepage!</h1>
-
+<h1>Binary tree page!</h1>
