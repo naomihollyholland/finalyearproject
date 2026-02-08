@@ -8,4 +8,10 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
+<nav>
+    <a href="/">Homepage</a>
+    <a href="/binary_tree">Binary tree</a>
+</nav>
+
+
 {@render children()}
