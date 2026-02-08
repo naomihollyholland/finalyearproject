@@ -1,9 +1,9 @@
 <script>
-    let {x,y} = $props();
+    let {i,x,y} = $props();
 </script>
 
-<div class="circle" style="top: {y}px">
-    {x}
+<div class="circle" style="top: {y}px; left: {x}px">
+    {i}
 </div>
 
 <style>
@@ -17,6 +17,6 @@
         justify-content: center;
         align-items: center;
         position:absolute;
-        transition: top 1s;
+        transition: 1s;
     }
 </style>
