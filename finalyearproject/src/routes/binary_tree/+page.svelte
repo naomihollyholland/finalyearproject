@@ -1,6 +1,7 @@
 <script lang="ts">
-    import { get } from "svelte/store";
+    import type { get } from "svelte/store";
     import TreeNode from "./TreeNode.svelte";
+    import type { NODE } from "$env/static/private";
 
     interface Node {
         id: number;
@@ -13,7 +14,9 @@
     }
     let i = $state([500, 150]);
 
-    let nodeinputvalue: number = $state(-1);
+    let nodeinputvalue: number = $state(0);
+
+    let node_to_delete: number = $state(0);
 
     let allnodes = $state([
         {
@@ -23,28 +26,38 @@
             y: i[1],
             parentid: null,
             lchildid: null,
-            rchildid: null
+            rchildid: null,
         },
-
     ]);
-
-    for (let node of allnodes) {
-        if (node.parentid != null && node != null) {
-            let parentnode = allnodes[node.parentid];
-            if (node.val < parentnode.val) {
-                node.x = parentnode.x - 100;
-                node.y = parentnode.y + 100;
-            } else {
-                node.x = parentnode.x + 100;
-                node.y = parentnode.y + 100;
-            }
-        }
-    }
 
     function findid(node: Node) {
         return node.id;
     }
 
+    function recalculate_positions() {
+        for (let node of allnodes) {
+            if (node.parentid == null) {
+                node.x = i[0];
+                node.y = i[1];
+            }
+            if (node.parentid != null) {
+                let parentnode = getparent(node);
+                if (parentnode != undefined) {
+                    if (parentnode.lchildid == node.id) {
+                        node.x = parentnode.x - 100;
+                        node.y = parentnode.y + 75;
+                    } else {
+                        node.x = parentnode.x + 100;
+                        node.y = parentnode.y + 75;
+                    }
+                }
+            }
+        }
+    }
+
+    function getnode(nodeid: Number) {
+        return allnodes.find((node) => node.id === nodeid);
+    }
 
     function getroot() {
         let root = allnodes.find((node) => node.parentid === null) || -1;
@@ -57,43 +70,196 @@
         return 0;
     }
 
-    function placenode(node1: Node, node2: Node) {
-        if (comparenodes(node1, node2) <= 0) {
-                if (node2.lchildid == null) {
-                    node2.lchildid = node1.id;
-                    node1.parentid = node2.id;
-                    node1.x = node2.x - 150;
-                    node1.y = node2.y + 100;
-                    //console.log(node1, node2);
-                } else{
-                    console.log(allnodes.find((node) => node.id === node2.lchildid) as Node);
-                    placenode(node1, allnodes.find((node) => node.id === node2.lchildid) as Node);
+    function getleftchild(node1: Node) {
+        return allnodes.find((node) => node.id == node1.lchildid);
+    }
+
+    function getrightchild(node1: Node) {
+        return allnodes.find((node) => node.id == node1.rchildid);
+    }
+
+    function getparent(node1: Node) {
+        return allnodes.find((node) => node.id == node1.parentid);
+    }
+
+    function swapnodes(node1: Node, node2: Node) {
+        if (node1 == undefined || node2 == undefined) {
+            console.log("one or both of two nodes was undefined");
+            return;
+        }
+        console.log("node1: " + node1.id);
+        console.log("node2: " + node2.id);
+
+        //get the temporary variables to store the information from the first node
+        let tempx = node1.x;
+        let tempy = node1.y;
+        let templchild = node1.lchildid;
+        let temprchild = node1.rchildid;
+        let tempparentid = node1.parentid;
+
+        node1.x = node2.x;
+        node1.y = node2.y;
+
+        node1.lchildid = node2.lchildid;
+        node1.rchildid = node2.rchildid;
+
+        if (getleftchild(node2) != undefined) {
+            getleftchild(node2).parentid = node1.id;
+        }
+
+        if (getrightchild(node2) != undefined) {
+            getrightchild(node2).parentid = node1.id;
+        }
+
+        if (getparent(node2) != undefined) {
+            if (getparent(node2).lchildid == node2.id) {
+                getparent(node2).lchildid = node1.id;
+            } else {
+                getparent(node2).rchildid = node1.id;
+            }
+        }
+
+        node1.parentid = node2.parentid;
+
+        node2.x = tempx;
+        node2.y = tempy;
+        node2.lchildid = templchild;
+        node2.rchildid = temprchild;
+        node2.parentid = tempparentid;
+
+        node2.lchildid = templchild;
+        node2.rchildid = temprchild;
+
+        if (getnode(templchild) != undefined) {
+            getnode(templchild).parentid = node2.id;
+        }
+
+        if (getnode(temprchild) != undefined) {
+            getnode(temprchild).parentid = node2.id;
+        }
+
+        if (getnode(tempparentid) != undefined) {
+            if (getnode(tempparentid).lchildid == node1.id) {
+                getnode(tempparentid).lchildid = node2.id;
+            } else {
+                getnode(tempparentid).rchildid = node2.id;
+            }
+        }
+
+        node2.parentid = tempparentid;
+    }
+
+    function getswapcandidate(node1: Node) {
+        let lchild = getleftchild(node1);
+
+        let inorderpredecessor = lchild;
+        if (inorderpredecessor != undefined) {
+            console.log("looping to find in order predecessor");
+            while (getrightchild(inorderpredecessor) != undefined) {
+                inorderpredecessor = getrightchild(inorderpredecessor);
+            }
+            return inorderpredecessor;
+        }
+
+        return null;
+    }
+
+    function deletenode() {
+        console.log("node being deleted");
+        let node = allnodes.find((node) => node.id === node_to_delete);
+        if (node == undefined) {
+            return;
+        }
+        console.log("found node to be deleted");
+        let swap = getswapcandidate(node);
+        if (swap == null) {
+            console.log("no left child");
+            //if there is a right child
+            if (getrightchild(node) != undefined) {
+                console.log("has a right child");
+                if (getparent(node) != undefined) {
+                    console.log("has a parent");
+                    getparent(node).rchildid = getrightchild(node).id;
+                    getrightchild(node).parentid = getparent(node).id;
+                } else {
+                    console.log("does not have a parent");
+                    getrightchild(node).parentid = null;
                 }
             }
-                else if (comparenodes(node1, node2) > 0) {
-                    if (node2.rchildid == null) {
-                        node2.rchildid = node1.id;
-                        node1.parentid = node2.id;
-                        node1.x = node2.x + 150;
-                        node1.y = node2.y + 100;
-                        //console.log(node1, node2);
-                    } else {
-                        placenode(node1, allnodes.find((node) => node.id === node2.rchildid) as Node);
-                    }
-                }
-                else {
+            let index = allnodes.findIndex(
+                (node) => node.id === node_to_delete,
+            );
 
-                    return;
-                }
-                }
-                
-    
-    
+            allnodes.splice(index, 1);
+            console.log($state.snapshot(allnodes));
+            recalculate_positions();
+            return;
+        }
+        swapnodes(node, swap);
+        console.log($state.snapshot(allnodes))
+        if (node.parentid != null) {
+            console.log("heloooooooooo");
+            console.log(node)
+            console.log(swap)
+            if (getparent(node).lchildid == node.id) {
+                getparent(node).lchildid = null;
+            } else {
+                console.log("runs correct")
+                getparent(node).rchildid = null;
+            }
+        }
+        console.log("found node to be swapped");
+
+        let index = allnodes.findIndex((node) => node.id === node_to_delete);
+        allnodes.splice(index, 1);
+
+        recalculate_positions();
+        console.log($state.snapshot(allnodes));
+    }
+
+    function placenode(node1: Node, node2: Node) {
+        if (comparenodes(node1, node2) <= 0) {
+            if (node2.lchildid == null) {
+                node2.lchildid = node1.id;
+                node1.parentid = node2.id;
+                //console.log(node1, node2);
+                recalculate_positions();
+            } else {
+                console.log(
+                    allnodes.find((node) => node.id === node2.lchildid) as Node,
+                );
+                placenode(
+                    node1,
+                    allnodes.find((node) => node.id === node2.lchildid) as Node,
+                );
+                recalculate_positions();
+            }
+        } else if (comparenodes(node1, node2) > 0) {
+            if (node2.rchildid == null) {
+                node2.rchildid = node1.id;
+                node1.parentid = node2.id;
+                //console.log(node1, node2);
+                recalculate_positions();
+            } else {
+                placenode(
+                    node1,
+                    allnodes.find((node) => node.id === node2.rchildid) as Node,
+                );
+                recalculate_positions();
+            }
+        } else {
+            recalculate_positions();
+            return;
+        }
+    }
 
     function push() {
-        if (nodeinputvalue == -1) return;
+        let i = 0;
+        while (allnodes.find((node) => node.id === i)) {
+            i = i + 1;
+        }
         let node = {
-            id: allnodes.length,
+            id: i,
             val: nodeinputvalue,
             x: 500,
             y: 500,
@@ -102,25 +268,25 @@
             rchildid: null,
         };
 
-        placenode(node, getroot() as Node);
-        console.log($state.snapshot(node));
-
+        if (allnodes.length < 1) {
+            allnodes.push(node);
+        } else {
+            placenode(node, getroot() as Node);
+            allnodes.push(node);
+        }
         console.log($state.snapshot(allnodes));
-        allnodes.push(node);
-
-
-        //get the node where there is no parent
-
-        //start comparing to left or right child until there is no child, then add the node there
-
-        nodeinputvalue = -1;
+        recalculate_positions();
     }
 </script>
 
 <h1>Binary tree page!</h1>
-<input bind:value={nodeinputvalue} placeholder=-1 type="number" />
+<input bind:value={nodeinputvalue} placeholder="0" type="number" />
 <button onclick={push}>Add node</button>
 
-{#each allnodes as node}
-    <TreeNode id = {node.id} value={node.val} x={node.x} y={node.y} />
+<br />
+<input bind:value={node_to_delete} placeholder="0" type="number" />
+<button onclick={deletenode}>delete node</button>
+
+{#each allnodes as node (node.id)}
+    <TreeNode id={node.id} value={node.val} x={node.x} y={node.y} />
 {/each}
