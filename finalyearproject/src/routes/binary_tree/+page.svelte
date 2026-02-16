@@ -18,7 +18,7 @@
 
     let node_to_delete: number = $state(0);
 
-    let allnodes = $state([
+    let allnodes : Node[] = $state([
         {
             id: 0,
             val: 1,
@@ -96,6 +96,9 @@
         let templchild = node1.lchildid;
         let temprchild = node1.rchildid;
         let tempparentid = node1.parentid;
+        let node1left = getleftchild(node1)
+        let node1right = getrightchild(node1)
+        let node1parent = getparent(node1)
 
         node1.x = node2.x;
         node1.y = node2.y;
@@ -103,19 +106,23 @@
         node1.lchildid = node2.lchildid;
         node1.rchildid = node2.rchildid;
 
-        if (getleftchild(node2) != undefined) {
-            getleftchild(node2).parentid = node1.id;
+
+        let left = getleftchild(node2)
+        if (left != undefined) {
+            left.parentid = node1.id;
         }
 
-        if (getrightchild(node2) != undefined) {
-            getrightchild(node2).parentid = node1.id;
+        let right = getrightchild(node2)
+        if (right != undefined) {
+            right.parentid = node1.id;
         }
 
-        if (getparent(node2) != undefined) {
-            if (getparent(node2).lchildid == node2.id) {
-                getparent(node2).lchildid = node1.id;
+        let parent = getparent(node2)
+        if (parent != undefined) {
+            if (parent.lchildid == node2.id) {
+                parent.lchildid = node1.id;
             } else {
-                getparent(node2).rchildid = node1.id;
+                parent.rchildid = node1.id;
             }
         }
 
@@ -130,19 +137,20 @@
         node2.lchildid = templchild;
         node2.rchildid = temprchild;
 
-        if (getnode(templchild) != undefined) {
-            getnode(templchild).parentid = node2.id;
+
+        if (node1left != undefined) {
+            node1left.parentid = node2.id;
         }
 
-        if (getnode(temprchild) != undefined) {
-            getnode(temprchild).parentid = node2.id;
+        if (node1right != undefined) {
+            node1right.parentid = node2.id;
         }
 
-        if (getnode(tempparentid) != undefined) {
-            if (getnode(tempparentid).lchildid == node1.id) {
-                getnode(tempparentid).lchildid = node2.id;
+        if (node1parent != undefined) {
+            if (node1parent.lchildid == node1.id) {
+                node1parent.lchildid = node2.id;
             } else {
-                getnode(tempparentid).rchildid = node2.id;
+                node1parent.rchildid = node2.id;
             }
         }
 
@@ -155,8 +163,9 @@
         let inorderpredecessor = lchild;
         if (inorderpredecessor != undefined) {
             console.log("looping to find in order predecessor");
-            while (getrightchild(inorderpredecessor) != undefined) {
-                inorderpredecessor = getrightchild(inorderpredecessor);
+            let rightchild = getrightchild(inorderpredecessor);
+            while (rightchild != undefined) {
+                rightchild = getrightchild(inorderpredecessor);
             }
             return inorderpredecessor;
         }
@@ -172,18 +181,21 @@
         }
         console.log("found node to be deleted");
         let swap = getswapcandidate(node);
+        let parent = getparent(node);
         if (swap == null) {
             console.log("no left child");
             //if there is a right child
-            if (getrightchild(node) != undefined) {
+            let rightchild = getrightchild(node);
+            parent = getparent(node);
+            if (rightchild != undefined) {
                 console.log("has a right child");
-                if (getparent(node) != undefined) {
+                if (parent != undefined) {
                     console.log("has a parent");
-                    getparent(node).rchildid = getrightchild(node).id;
-                    getrightchild(node).parentid = getparent(node).id;
+                    parent.rchildid = rightchild.id;
+                    rightchild.parentid = parent.id;
                 } else {
                     console.log("does not have a parent");
-                    getrightchild(node).parentid = null;
+                    rightchild.parentid = null;
                 }
             }
             let index = allnodes.findIndex(
@@ -197,15 +209,13 @@
         }
         swapnodes(node, swap);
         console.log($state.snapshot(allnodes))
-        if (node.parentid != null) {
-            console.log("heloooooooooo");
-            console.log(node)
-            console.log(swap)
-            if (getparent(node).lchildid == node.id) {
-                getparent(node).lchildid = null;
+        parent = getparent(node);
+        if (parent != undefined) {
+            if (parent.lchildid == node.id) {
+                parent.lchildid = null;
             } else {
                 console.log("runs correct")
-                getparent(node).rchildid = null;
+                parent.rchildid = null;
             }
         }
         console.log("found node to be swapped");
