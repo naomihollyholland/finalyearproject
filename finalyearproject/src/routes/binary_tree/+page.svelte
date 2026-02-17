@@ -11,6 +11,7 @@
         parentid: number | null;
         lchildid: number | null;
         rchildid: number | null;
+        width: number;
     }
     let i = $state([500, 150]);
 
@@ -18,7 +19,7 @@
 
     let node_to_delete: number = $state(0);
 
-    let allnodes : Node[] = $state([
+    let allnodes: Node[] = $state([
         {
             id: 0,
             val: 1,
@@ -27,32 +28,53 @@
             parentid: null,
             lchildid: null,
             rchildid: null,
+            width: 100,
         },
     ]);
 
-    function findid(node: Node) {
-        return node.id;
-    }
-
     function recalculate_positions() {
+        let root = getroot()
+        if(root != undefined){
+            calculate_widths(root)
+        }
+
         for (let node of allnodes) {
             if (node.parentid == null) {
+                console.log("recalc")
                 node.x = i[0];
                 node.y = i[1];
             }
+        
             if (node.parentid != null) {
                 let parentnode = getparent(node);
                 if (parentnode != undefined) {
                     if (parentnode.lchildid == node.id) {
-                        node.x = parentnode.x - 100;
-                        node.y = parentnode.y + 75;
+                        node.x = parentnode.x - ((node.width / 2) - 25);
+                        node.y = parentnode.y + 125;
                     } else {
-                        node.x = parentnode.x + 100;
-                        node.y = parentnode.y + 75;
+                        node.x = parentnode.x + ((node.width / 2) + 25);
+                        node.y = parentnode.y + 125;
                     }
                 }
             }
         }
+        console.log($state.snapshot(allnodes))
+    }
+
+    function calculate_widths(node: Node) {
+        let left = getleftchild(node);
+        let right = getrightchild(node);
+        let totalwidth = 0;
+        if (left != undefined) {
+            totalwidth += calculate_widths(left);
+            console.log(totalwidth)
+        } else if (right != undefined) {
+            totalwidth + calculate_widths(right);
+            console.log(totalwidth)
+        }
+        node.width = totalwidth + 150;
+        console.log(node.width)
+        return node.width;
     }
 
     function getnode(nodeid: Number) {
@@ -60,7 +82,7 @@
     }
 
     function getroot() {
-        let root = allnodes.find((node) => node.parentid === null) || -1;
+        let root = allnodes.find((node) => node.parentid === null);
         return root;
     }
 
@@ -96,9 +118,9 @@
         let templchild = node1.lchildid;
         let temprchild = node1.rchildid;
         let tempparentid = node1.parentid;
-        let node1left = getleftchild(node1)
-        let node1right = getrightchild(node1)
-        let node1parent = getparent(node1)
+        let node1left = getleftchild(node1);
+        let node1right = getrightchild(node1);
+        let node1parent = getparent(node1);
 
         node1.x = node2.x;
         node1.y = node2.y;
@@ -106,18 +128,17 @@
         node1.lchildid = node2.lchildid;
         node1.rchildid = node2.rchildid;
 
-
-        let left = getleftchild(node2)
+        let left = getleftchild(node2);
         if (left != undefined) {
             left.parentid = node1.id;
         }
 
-        let right = getrightchild(node2)
+        let right = getrightchild(node2);
         if (right != undefined) {
             right.parentid = node1.id;
         }
 
-        let parent = getparent(node2)
+        let parent = getparent(node2);
         if (parent != undefined) {
             if (parent.lchildid == node2.id) {
                 parent.lchildid = node1.id;
@@ -136,7 +157,6 @@
 
         node2.lchildid = templchild;
         node2.rchildid = temprchild;
-
 
         if (node1left != undefined) {
             node1left.parentid = node2.id;
@@ -187,6 +207,13 @@
             //if there is a right child
             let rightchild = getrightchild(node);
             parent = getparent(node);
+            if(parent != undefined){
+            if (parent.lchildid == node.id) {
+                parent.lchildid = null;
+            } else {
+                parent.rchildid = null;
+            }
+            }
             if (rightchild != undefined) {
                 console.log("has a right child");
                 if (parent != undefined) {
@@ -208,13 +235,12 @@
             return;
         }
         swapnodes(node, swap);
-        console.log($state.snapshot(allnodes))
+        console.log($state.snapshot(allnodes));
         parent = getparent(node);
         if (parent != undefined) {
             if (parent.lchildid == node.id) {
                 parent.lchildid = null;
             } else {
-                console.log("runs correct")
                 parent.rchildid = null;
             }
         }
@@ -228,6 +254,7 @@
     }
 
     function placenode(node1: Node, node2: Node) {
+        console.log($state.snapshot(allnodes))
         if (comparenodes(node1, node2) <= 0) {
             if (node2.lchildid == null) {
                 node2.lchildid = node1.id;
@@ -276,6 +303,7 @@
             parentid: null,
             lchildid: null,
             rchildid: null,
+            width: 100,
         };
 
         if (allnodes.length < 1) {
