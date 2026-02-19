@@ -49,11 +49,13 @@
                 let parentnode = getparent(node);
                 if (parentnode != undefined) {
                     if (parentnode.lchildid == node.id) {
-                        node.x = parentnode.x - ((node.width / 2) - 25);
+                        node.x = parentnode.x - ((node.width * 3) / 4);
                         node.y = parentnode.y + 125;
+                        console.log("called on: node " + node.id)
                     } else {
-                        node.x = parentnode.x + ((node.width / 2) + 25);
+                        node.x = parentnode.x + ((node.width * 3) / 4);
                         node.y = parentnode.y + 125;
+                        console.log("called on: node " + node.id)
                     }
                 }
             }
@@ -62,19 +64,83 @@
     }
 
     function calculate_widths(node: Node) {
-        let left = getleftchild(node);
-        let right = getrightchild(node);
         let totalwidth = 0;
-        if (left != undefined) {
-            totalwidth += calculate_widths(left);
-            console.log(totalwidth)
-        } else if (right != undefined) {
-            totalwidth + calculate_widths(right);
-            console.log(totalwidth)
+
+        let left = inorderpredecessor(node)
+        let right = inordersuccessor(node)
+
+        if(left != undefined && right != undefined){
+            if(left.x + 100 > right.x){
+                totalwidth += 150
+            }
         }
-        node.width = totalwidth + 150;
-        console.log(node.width)
-        return node.width;
+
+        let parent = undefined
+        if(left != undefined){
+            parent = getparent(left)
+            if(parent?.rchildid != left.id){
+                parent = undefined
+            }
+        }
+        console.log("parent")
+        console.log($state.snapshot(parent))
+        let node1 = left
+        console.log("hullo")
+        console.log($state.snapshot(node1))
+        console.log($state.snapshot(allnodes))
+        if((node1 != undefined) && parent != undefined){
+            console.log("trywhile")
+            while(parent != undefined && getrightchild(parent) == node1){
+                node1 = parent
+                parent = getparent(parent)
+            }
+            if(node1 != undefined){
+                if(getleftchild(node1) != undefined && getrightchild(node1) != undefined){
+                    console.log("calculating widths on:")
+                    console.log($state.snapshot(node1))
+                    totalwidth += calculate_widths(node1)
+                    // do something else here,,, add widths maybe? idiot
+                }
+            }
+        } else {
+            console.log("else")
+        }
+
+
+        parent = undefined
+        if(right != undefined){
+            parent = getparent(right)
+            if(parent?.lchildid != right.id){
+                parent = undefined
+            }
+        }
+        console.log("parent")
+        console.log($state.snapshot(parent))
+        node1 = right
+        console.log("child")
+        console.log($state.snapshot(node1))
+        if((node1 != undefined) && parent != undefined){
+            console.log("trywhile")
+            while(parent != undefined && getleftchild(parent) == node1){
+                node1 = parent
+                parent = getparent(parent)
+            }
+            if(node1 != undefined){
+                if(getleftchild(node1) != undefined && getrightchild(node1) != undefined){
+                    console.log("calculating widths on:")
+                    console.log($state.snapshot(parent))
+                    totalwidth += calculate_widths(node1)
+                    // do something else here,,, add widths maybe? idiot
+                }
+            }
+        } else {
+            console.log("else")
+        }
+
+        console.log($state.snapshot(left))
+        console.log($state.snapshot(right))
+        node.width = totalwidth += 200
+        return node.width
     }
 
     function getnode(nodeid: Number) {
@@ -112,6 +178,8 @@
         console.log("node1: " + node1.id);
         console.log("node2: " + node2.id);
 
+
+
         //get the temporary variables to store the information from the first node
         let tempx = node1.x;
         let tempy = node1.y;
@@ -121,6 +189,9 @@
         let node1left = getleftchild(node1);
         let node1right = getrightchild(node1);
         let node1parent = getparent(node1);
+
+        let node2rchild = node2.lchildid;
+        let node2lchild = node2.lchildid;
 
         node1.x = node2.x;
         node1.y = node2.y;
@@ -155,8 +226,25 @@
         node2.rchildid = temprchild;
         node2.parentid = tempparentid;
 
-        node2.lchildid = templchild;
-        node2.rchildid = temprchild;
+        if(node2.lchildid == node2.id){
+            node2.lchildid = node2lchild;
+            if(node2lchild != null){
+                let leftchild = getnode(node2lchild)
+                if(leftchild != undefined){
+                    leftchild.parentid = node2.id
+                }
+            }
+        }
+
+        if(node2.rchildid == node2.id){
+            node2.rchildid = node2rchild;
+            if(node2rchild != null){
+                let rightchild = getnode(node2rchild)
+                if(rightchild != undefined){
+                    rightchild.parentid = node2.id
+                }
+            }
+        }
 
         if (node1left != undefined) {
             node1left.parentid = node2.id;
@@ -165,7 +253,7 @@
         if (node1right != undefined) {
             node1right.parentid = node2.id;
         }
-
+        
         if (node1parent != undefined) {
             if (node1parent.lchildid == node1.id) {
                 node1parent.lchildid = node2.id;
@@ -174,6 +262,7 @@
             }
         }
 
+        console.log($state.snapshot(allnodes))
         node2.parentid = tempparentid;
     }
 
@@ -192,6 +281,37 @@
 
         return null;
     }
+
+    function inorderpredecessor(node1: Node){
+        let lchild = getleftchild(node1);
+        let inorderpredecessor = lchild;
+        if(inorderpredecessor != undefined){
+            console.log("looping to find in order predecessor")
+            let rightchild = getrightchild(inorderpredecessor)
+            while(rightchild != undefined){
+                inorderpredecessor = rightchild
+                rightchild = getrightchild(rightchild)
+            }
+            return inorderpredecessor
+        }
+        return undefined;
+    }
+
+    function inordersuccessor(node1: Node){
+        let rchild = getrightchild(node1);
+        let inordersuccessor = rchild;
+        if(inordersuccessor != undefined){
+            console.log("looping to find in order successor")
+            let leftchild = getleftchild(inordersuccessor)
+            while(leftchild != undefined){
+                inordersuccessor = leftchild
+                leftchild = getleftchild(leftchild)
+            }
+            return inordersuccessor
+        }
+        return undefined;
+    }
+
 
     function deletenode() {
         console.log("node being deleted");
@@ -234,6 +354,7 @@
             recalculate_positions();
             return;
         }
+        console.log("error here?")
         swapnodes(node, swap);
         console.log($state.snapshot(allnodes));
         parent = getparent(node);
@@ -262,9 +383,12 @@
                 //console.log(node1, node2);
                 recalculate_positions();
             } else {
-                console.log(
+                console.log("finding left child:")
+                console.log( $state.snapshot(
                     allnodes.find((node) => node.id === node2.lchildid) as Node,
-                );
+                ));
+                console.log("node1")
+                console.log($state.snapshot(node1))
                 placenode(
                     node1,
                     allnodes.find((node) => node.id === node2.lchildid) as Node,
