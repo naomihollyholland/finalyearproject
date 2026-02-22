@@ -1,7 +1,158 @@
 <script lang="ts">
-    import type { get } from "svelte/store";
     import TreeNode from "./TreeNode.svelte";
-    import type { NODE } from "$env/static/private";
+    import type { Attachment } from "svelte/attachments";
+
+    let size = $derived.by(()=>{
+        let xmax = window.innerWidth
+        let ymax = window.innerHeight
+        
+        for(let node of allnodes){
+            if(node.x > xmax){
+                xmax = node.x
+            } else if(node.y > ymax){
+                ymax = node.y
+                }
+            }
+
+
+        clearlines()
+        drawlines()
+        return[xmax + 150,ymax + 150]
+
+    
+
+
+    });
+
+    let canvas: HTMLCanvasElement;
+    let ctx: CanvasRenderingContext2D | null;
+    const makecanvas: Attachment<HTMLCanvasElement> = (element) => {
+        canvas = element;
+        ctx = canvas.getContext("2d");
+        if (ctx != null) {
+            ctx.fillStyle = "black";
+        }
+        console.log(canvas);
+        console.log(ctx);
+        console.log("made a canvas and a context element!");
+    };
+
+    function clearlines() {
+        if (ctx != undefined) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    }
+    function drawlines() {
+        console.log("canvas: " + canvas);
+        console.log("ctx: " + ctx);
+        if (ctx != undefined && canvas != undefined) {
+            for (let node of allnodes) {
+                ctx.beginPath();
+                //for left child
+                ctx.lineWidth = 10;
+                let leftchild = getleftchild(node);
+                if (leftchild != undefined) {
+                    ctx.moveTo(node.x + 42, node.y + 20);
+                    ctx.lineTo(leftchild.x + 42, leftchild.y + 20);
+                    ctx.stroke();
+                }
+
+                //for right child
+                let rightchild = getrightchild(node);
+                if (rightchild != undefined) {
+                    ctx.moveTo(node.x + 42, node.y + 20);
+                    ctx.lineTo(rightchild.x + 42, rightchild.y + 20);
+                    ctx.stroke();
+                }
+            }
+        }
+    }
+
+    function drawparenttoleftchild(node1: Node) {
+        if (ctx != undefined && canvas != undefined) {
+            ctx.beginPath();
+            ctx.lineWidth = 10;
+            let leftchild = getleftchild(node1);
+            if (leftchild != undefined) {
+                ctx.moveTo(node1.x + 42, node1.y + 20);
+                ctx.lineTo(leftchild.x + 42, leftchild.y + 20);
+                ctx.stroke();
+            }
+        }
+    }
+
+    function drawparenttorightchild(node1: Node) {
+        if (ctx != undefined && canvas != undefined) {
+            ctx.beginPath();
+            ctx.lineWidth = 10;
+            let rightchild = getrightchild(node1);
+            if (rightchild != undefined) {
+                ctx.moveTo(node1.x + 42, node1.y + 20);
+                ctx.lineTo(rightchild.x + 42, rightchild.y + 20);
+                ctx.stroke();
+            }
+        }
+    }
+
+    function clearleftchildline(node1: Node) {
+        if (ctx != undefined) {
+            let leftchild = getleftchild(node1);
+            let leftpos = node1.x + 21;
+            let rightpos = node1.x + 21;
+            let height = 0;
+            if (leftchild != null) {
+                leftpos = leftchild.x + 21;
+                height = leftchild.y - node1.y;
+                height += 25;
+                rightpos += 30;
+            }
+            let fin = rightpos - leftpos;
+            if (rightpos - leftpos < 0) {
+                fin = node1.width;
+            }
+            console.log(
+                "clearing rectangle of: " +
+                    fin +
+                    ", " +
+                    height +
+                    " starting at: " +
+                    leftpos +
+                    ", " +
+                    node1.y,
+            );
+            ctx.clearRect(leftpos, node1.y, fin, height);
+        }
+    }
+
+    function clearrightchildline(node1: Node) {
+        if (ctx != undefined) {
+            let rightchild = getrightchild(node1);
+            let leftpos = node1.x + 21;
+            let height = node1.y + 10;
+            let rightpos = 0;
+            if (rightchild != null) {
+                rightpos = rightchild.x + 21;
+                height = rightchild.y - node1.y;
+                height += 25;
+                rightpos += 30;
+            }
+            let fin = rightpos - leftpos;
+            if (rightpos - leftpos < 0) {
+                fin = node1.width;
+            }
+            console.log(
+                "clearing rectangle of: " +
+                    fin +
+                    ", " +
+                    height +
+                    "starting at: " +
+                    leftpos +
+                    ", " +
+                    node1.y,
+            );
+            ctx.clearRect(leftpos, node1.y, fin, height);
+        }
+    }
 
     interface Node {
         id: number;
@@ -32,6 +183,8 @@
         },
     ]);
 
+    
+
     function recalculate_positions() {
         let root = getroot();
         if (root != undefined) {
@@ -49,13 +202,56 @@
                 let parentnode = getparent(node);
                 if (parentnode != undefined) {
                     if (parentnode.lchildid == node.id) {
-                        node.x = parentnode.x - ((parentnode.width / 6) + (node.width / 4));
-                        node.y = parentnode.y + 125;
-                        console.log("called on: node " + node.id);
+                        console.log(
+                            "movement check called on: node " + node.id,
+                        );
+                        if (node.x != parentnode.x - parentnode.width / 4) {
+                            clearleftchildline(parentnode);
+                            node.x = parentnode.x - parentnode.width / 4;
+                            node.y = parentnode.y + 125;
+                            setTimeout(function () {
+                                drawparenttoleftchild(parentnode);
+                            }, 1000);
+
+                            clearleftchildline(node);
+                            setTimeout(function () {
+                                drawparenttoleftchild(node);
+                            }, 1000);
+
+                            clearrightchildline(node);
+                            setTimeout(function () {
+                                drawparenttorightchild(node);
+                            }, 1000);
+
+                            console.log("moved node");
+                        } else {
+                            console.log("did not move node");
+                        }
                     } else {
-                        node.x = parentnode.x + ((parentnode.width / 6) + (node.width / 4));
-                        node.y = parentnode.y + 125;
-                        console.log("called on: node " + node.id);
+                        console.log(
+                            "movement check called on: node " + node.id,
+                        );
+                        if (node.x != parentnode.x + parentnode.width / 4) {
+                            clearrightchildline(parentnode);
+                            node.x = parentnode.x + parentnode.width / 4;
+                            node.y = parentnode.y + 125;
+                            setTimeout(function () {
+                                drawparenttorightchild(parentnode);
+                            }, 1000);
+
+                            clearleftchildline(node);
+                            setTimeout(function () {
+                                drawparenttoleftchild(node);
+                            }, 1000);
+
+                            clearrightchildline(node);
+                            setTimeout(function () {
+                                drawparenttorightchild(node);
+                            }, 1000);
+                            console.log("moved node");
+                        } else {
+                            console.log("did not move node");
+                        }
                     }
                 }
             }
@@ -82,12 +278,12 @@
         let right = inordersuccessor(node);
 
         if (left != undefined && right != undefined) {
-            if (left.x + 100 > right.x) {
-                totalwidth += 100;
+            if (left.x + 200 > right.x) {
+                totalwidth += 200;
             }
         }
-        node.width = totalwidth
-        return node.width
+        node.width = totalwidth;
+        return node.width;
     }
 
     function getnode(nodeid: Number) {
@@ -268,13 +464,14 @@
         let parent = getparent(node);
         if (swap == null) {
             console.log("no left child");
-            //if there is a right child
             let rightchild = getrightchild(node);
             parent = getparent(node);
             if (parent != undefined) {
                 if (parent.lchildid == node.id) {
+                    clearleftchildline(parent);
                     parent.lchildid = null;
                 } else {
+                    clearrightchildline(parent);
                     parent.rchildid = null;
                 }
             }
@@ -389,6 +586,9 @@
     }
 </script>
 
+
+
+<canvas id="canvas" height={size[1]} width={size[0]} {@attach makecanvas}> </canvas>
 <h1>Binary tree page!</h1>
 <input bind:value={nodeinputvalue} placeholder="0" type="number" />
 <button onclick={push}>Add node</button>
@@ -400,3 +600,13 @@
 {#each allnodes as node (node.id)}
     <TreeNode id={node.id} value={node.val} x={node.x} y={node.y} />
 {/each}
+
+<style>
+    #canvas {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        background: linear-gradient(#d896ff, #800080, #660066);
+        z-index: -1;
+    }
+</style>
