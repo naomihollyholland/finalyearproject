@@ -11,6 +11,7 @@
 <nav>
     <a href="/">Homepage</a>
     <a href="/binary_tree">Binary tree</a>
+	<a href="/binary_heap">Binary heap</a>
 </nav>
 
 

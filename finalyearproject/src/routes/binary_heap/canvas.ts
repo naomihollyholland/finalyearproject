@@ -1,7 +1,7 @@
 
 import type { Attachment } from "svelte/attachments";
-import type { Node } from "./BinaryTree.svelte";
-import * as treestruct from "./BinaryTree.svelte.ts";
+import type { Node } from "./BinaryHeap.svelte";
+import * as treestruct from "./BinaryHeap.svelte.ts";
 
 let canvas: HTMLCanvasElement;
 let ctx: CanvasRenderingContext2D | null;
