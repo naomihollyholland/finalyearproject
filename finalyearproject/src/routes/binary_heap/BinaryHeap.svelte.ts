@@ -245,7 +245,7 @@ export function swapnodes(node1: Node, node2: Node) {
         node1right.parentid = node1.id
     }
     if(node1parent != undefined){
-        if (node1parent.lchildid == node1.id) {
+        if (node1parent.lchildid == node2.id) {
             node1parent.lchildid = node1.id;
         } else {
             node1parent.rchildid = node1.id;
@@ -283,7 +283,7 @@ export function swapnodes(node1: Node, node2: Node) {
         node2right.parentid = node2.id
     }
     if(node2parent != undefined){
-        if (node2parent.lchildid == node2.id) {
+        if (node2parent.lchildid == node1.id) {
             node2parent.lchildid = node2.id;
         } else {
             node2parent.rchildid = node2.id;
@@ -401,7 +401,7 @@ export function push(nodeinputvalue : number) {
         i = i + 1;
     }
 
-    let node = {
+    let node : Node = {
         id: i,
         val: nodeinputvalue,
         x: 500,
@@ -417,8 +417,10 @@ export function push(nodeinputvalue : number) {
     let nodepos = allnodes.findIndex((node) => node.id === i)
     console.log("node position:" +  nodepos)
 
-    let thenode = getnode(i)
-    let parentpos = (nodepos - 1) / 2
+
+
+    //this is fucking stupid
+    let parentpos = (nodepos-1) / 2
     let leftchild = true
     if(!Number.isInteger(parentpos)){
         parentpos = ((nodepos - 2) / 2)
@@ -426,21 +428,25 @@ export function push(nodeinputvalue : number) {
     }
     console.log("parent position:" + parentpos)
     let parent = allnodes[parentpos]
-    console.log("parent id: " + parent.id)
-    if(parent.lchildid == null && thenode != undefined){
-        parent.lchildid = node.id
-        thenode.parentid = parent.id
-        thenode.x = parent.x - (parent.width / 3.5)
-    } else if(parent.rchildid == null && thenode != undefined){
-        parent.rchildid = node.id
-        thenode.parentid = parent.id
-        thenode.x = parent.x + (parent.width / 3.5)
-    }
-    if(thenode != undefined){
-    thenode.y = parent.y + 125
+    if(parent != undefined){
+        if(parent.lchildid == null && node != undefined){
+            parent.lchildid = node.id
+            node.parentid = parent.id
+            node.x = parent.x - (parent.width / 3.5)
+        } else if(parent.rchildid == null && node != undefined){
+            parent.rchildid = node.id
+            node.parentid = parent.id
+            node.x = parent.x + (parent.width / 3.5)
+        }
+        if(node != undefined){
+            node.y = parent.y + 125
+        }
     }
 
     console.log($state.snapshot(allnodes));
     console.log("heapifying")
     recalculate_positions();
+
+    console.log("finished heapifying")
+    console.log($state.snapshot(allnodes));
 }

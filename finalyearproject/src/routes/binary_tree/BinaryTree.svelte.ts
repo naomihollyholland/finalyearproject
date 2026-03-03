@@ -45,11 +45,11 @@ export function recalculate_positions() {
         if (node.parentid != null) {
             let parentnode = getparent(node);
             if (parentnode != undefined) {
+                node.y = parentnode.y + 125;
                 if (parentnode.lchildid == node.id) {
                     console.log(
                         "movement check called on: node " + node.id,
                     );
-                    node.y = parentnode.y + 125;
                     if ((node.x != parentnode.x - (parentnode.width / 3.5))) {
                         canvas.clearleftchildline(parentnode);
                         node.x = parentnode.x - (parentnode.width / 3.5);
