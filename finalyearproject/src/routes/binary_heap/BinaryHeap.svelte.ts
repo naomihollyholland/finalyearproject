@@ -213,14 +213,14 @@ export function heapify(){
                 console.log("swapped nodes: " + parent.id + " & " + node.id)
                 node = getparent(node)
                 parent = getparent(parent)
-                // while(node != undefined && parent != undefined){
-                //     if(comparenodes(node, parent) == 1 ){
-                //         swapnodes(node, parent)
-                //         console.log("swapped nodes: " + parent.id + " & " + node.id)
-                //         node = getparent(node)
-                //         parent = getparent(parent)
-                //     }
-                // }
+                while(node != undefined && parent != undefined){
+                    if(comparenodes(node, parent) == 1 ){
+                        swapnodes(node, parent)
+                        console.log("swapped nodes: " + parent.id + " & " + node.id)
+                        node = getparent(node)
+                        parent = getparent(parent)
+                    }
+                }
                 
             }
         }
