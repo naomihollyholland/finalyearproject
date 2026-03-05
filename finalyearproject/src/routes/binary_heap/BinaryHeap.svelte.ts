@@ -206,20 +206,39 @@ export function heapify(){
         if(parent != undefined && node != undefined){
             console.log("would check to swap: " + node.id + " and: " + parent.id)
             if(comparenodes(node, parent) == 1){
-                swapnodes(node, parent)
+                swapnodes(node,parent)
                 console.log(node.id)
                 console.log(parent)
                 console.log($state.snapshot(allnodes))
                 console.log("swapped nodes: " + parent.id + " & " + node.id)
                 node = getparent(node)
                 parent = getparent(parent)
-                while(node != undefined && parent != undefined){
-                    if(comparenodes(node, parent) == 1 ){
-                        swapnodes(node, parent)
-                        console.log("swapped nodes: " + parent.id + " & " + node.id)
-                        node = getparent(node)
-                        parent = getparent(parent)
-                    }
+                let check = false
+                while(node != undefined && parent != undefined && !check){
+                    console.log(node.id)
+                    console.log(parent.id)
+                    console.log(check)
+                        if(comparenodes(node, parent) == 1 ){
+                            swapnodes(node, parent)
+                            console.log("swapped nodes: " + parent.id + " & " + node.id)
+                            let newnode = getparent(node)
+                            if(newnode != undefined)
+                                node = newnode
+                            else{
+                                check = true
+                            }
+                            let newparent = getparent(parent)
+                            if(newparent != undefined)
+                                parent = newparent
+                            else{
+                                check = true
+                            }
+                            
+                        } else {
+                            console.log("break!")
+                            check = true
+                        }
+
                 }
                 
             }
@@ -253,21 +272,11 @@ export function swapnodes(node1: Node, node2: Node) {
     console.log($state.snapshot(allnodes))
     //swap the 1st node's children and parents to point to the new pointer
     if(static1l != undefined){
-        if(static1l.id == node2.id){
-            static1l = getleftchild(static1l)
-        }
-        if(static1l != undefined){
-            static1l.parentid = node2.id
-        }
+        static1l.parentid = node2.id
     }
 
     if(static1r != undefined){
-        if(static1r.id == node2.id){
-            static1l = getrightchild(static1r)
-        }
-        if(static1r != undefined){
-            static1r.parentid = node2.id
-        }
+        static1r.parentid = node2.id
     }
     
     if(static1p != undefined){
@@ -281,21 +290,11 @@ export function swapnodes(node1: Node, node2: Node) {
     //swap the 2nd node's children and parents to the new pointer
 
     if(static2l != undefined){
-        if(static2l.id == node1.id){
-            static2l = getleftchild(static2l)
-        }
-        if(static2l != undefined){
-            static2l.parentid = node1.id
-        }
+        static2l.parentid = node1.id
     }
 
     if(static2r != undefined){
-        if(static2r.id == node1.id){
-            static2l = getrightchild(static2r)
-        }
-        if(static2r != undefined){
-            static2r.parentid = node1.id
-        }
+        static2r.parentid = node1.id
     }
     
     if(static2p != undefined){
@@ -311,6 +310,12 @@ export function swapnodes(node1: Node, node2: Node) {
     let static1val = static1.val
     let static2val = static2.val
     
+    let static1x = static1.x
+    let static2x = static2.x
+    let static1y = static1.y
+    let static2y = static2.y
+    
+
     //swap the nodes
     node1 = static2
     node2 = static1
@@ -318,10 +323,14 @@ export function swapnodes(node1: Node, node2: Node) {
     //but keep the id and value
     node1.val = static1val
     node1.id = static1id
-
+    node1.x = static1x
+    node1.y = static1y
 
     node2.val = static2val
     node2.id = static2id
+
+    node2.x = static2x
+    node2.y = static2y
 
     console.log("afterswap")
     console.log($state.snapshot(allnodes))

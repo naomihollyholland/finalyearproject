@@ -33,6 +33,7 @@ export function drawlines() {
             ctx.lineWidth = 10;
             let leftchild = treestruct.getleftchild(node);
             if (leftchild != undefined) {
+                
                 ctx.moveTo(node.x + 50, node.y + 50);
                 ctx.lineTo(leftchild.x + 50, leftchild.y + 50);
                 ctx.stroke();
