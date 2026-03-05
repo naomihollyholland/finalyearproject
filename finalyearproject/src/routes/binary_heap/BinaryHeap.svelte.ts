@@ -153,6 +153,40 @@ export function getparent(node1: Node) {
     return allnodes.find((node) => node.id == node1.parentid);
 }
 
+// export function heapify(){
+    
+//     let i = 0
+//     length = allnodes.length - 1
+//     console.log(length)
+//     console.log($state.snapshot(allnodes))
+//     let node = undefined;
+//     let parent = undefined
+//     while(i < allnodes.length){
+//         console.log("checking node in position: " + (length - i))
+//         node = allnodes[length - i]
+//         console.log("checking node " + node.id)
+//         parent = getparent(node)
+//         if(parent != undefined){
+//         console.log("parent of node is: " + parent.id)
+//         }
+//         let temp;
+//         if(parent != undefined && node != undefined){
+//             console.log("would check to swap: " + node.id + " and: " + parent.id)
+//             while((comparenodes(node, parent) == 1)){
+//                 swapnodes(node, parent)
+//                 console.log(node.id)
+//                 console.log(parent)
+//                 console.log($state.snapshot(allnodes))
+//                 console.log("swapped nodes: " + parent.id + " & " + node.id)
+//                 temp = $state.snapshot(parent)
+
+                                
+//             }
+//         }
+//         i += 1;    
+//     }    
+// }
+
 export function heapify(){
     
     let i = 0
@@ -194,6 +228,7 @@ export function heapify(){
     }    
 }
 
+
 export function swapnodes(node1: Node, node2: Node) {
     if (node1 == undefined || node2 == undefined) {
         console.log("one or both of two nodes was undefined");
@@ -201,189 +236,154 @@ export function swapnodes(node1: Node, node2: Node) {
     }
     console.log("node1: " + node1.id);
     console.log("node2: " + node2.id);
-    console.log("state before:")
+
+    let static1 = $state.snapshot(node1)
+    let static2 = $state.snapshot(node2)
+
+
+    let static1l = getleftchild(static1)
+    let static1r = getrightchild(static1)
+    let static1p = getparent(static1)
+
+    let static2l = getleftchild(static2)
+    let static2r = getrightchild(static2)
+    let static2p = getparent(static2)
+
+
     console.log($state.snapshot(allnodes))
+    //swap the 1st node's children and parents to point to the new pointer
+    if(static1l != undefined){
+        if(static1l.id == node2.id){
+            static1l = getleftchild(static1l)
+        }
+        if(static1l != undefined){
+            static1l.parentid = node2.id
+        }
+    }
 
-    //        get the temporary variables to store the information from the first node
-    let node1pos = allnodes.findIndex((node) => node.id === node1.id)
-    let node2pos = allnodes.findIndex((node) => node.id === node2.id)
-    let tempx = node1.x;
-    let tempy = node1.y;
-    let templchild = node1.lchildid;
-    let temprchild = node1.rchildid;
-    let tempparentid = node1.parentid;
+    if(static1r != undefined){
+        if(static1r.id == node2.id){
+            static1l = getrightchild(static1r)
+        }
+        if(static1r != undefined){
+            static1r.parentid = node2.id
+        }
+    }
+    
+    if(static1p != undefined){
+        if(static1p.lchildid == static1.id){
+            static1p.lchildid = node2.id
+        } else {
+            static1p.rchildid = node2.id
+        }
+    }
+
+    //swap the 2nd node's children and parents to the new pointer
+
+    if(static2l != undefined){
+        if(static2l.id == node1.id){
+            static2l = getleftchild(static2l)
+        }
+        if(static2l != undefined){
+            static2l.parentid = node1.id
+        }
+    }
+
+    if(static2r != undefined){
+        if(static2r.id == node1.id){
+            static2l = getrightchild(static2r)
+        }
+        if(static2r != undefined){
+            static2r.parentid = node1.id
+        }
+    }
+    
+    if(static2p != undefined){
+        if(static2p.lchildid == static2.id){
+            static2p.lchildid = node1.id
+        } else {
+            static2p.rchildid = node1.id
+        }
+    }
+
+    let static1id = static1.id
+    let static2id = static2.id
+    let static1val = static1.val
+    let static2val = static2.val
+    
+    //swap the nodes
+    node1 = static2
+    node2 = static1
+
+    //but keep the id and value
+    node1.val = static1val
+    node1.id = static1id
 
 
-    //for node 1, swapping to node 2
+    node2.val = static2val
+    node2.id = static2id
 
-    node1.x = node2.x
-    node1.y = node2.y
-    node1.lchildid = node2.lchildid
+    console.log("afterswap")
+    console.log($state.snapshot(allnodes))
+    
+    console.log("node")
+    console.log(node1.id)
+    console.log(node1.lchildid)
+    console.log(node1.rchildid)
+    console.log(node1.parentid)
+    console.log(node1.val)
+    
+    console.log("node2")
+    console.log(node2.id)
+    console.log(node2.lchildid)
+    console.log(node2.rchildid)
+    console.log(node2.parentid)
+    console.log(node2.val)
+
     if(node1.lchildid == node1.id){
         node1.lchildid = node2.id
     }
 
-    node1.rchildid = node2.rchildid
     if(node1.rchildid == node1.id){
         node1.rchildid = node2.id
     }
-
     
-    node1.parentid = node2.parentid
     if(node1.parentid == node1.id){
         node1.parentid = node2.id
     }
 
-    let node1left = getleftchild(node1);
-    let node1right = getrightchild(node1);
-    let node1parent = getparent(node1);
-
-    if(node1left != undefined){
-        node1left.parentid = node1.id
-    }
-    if(node1right != undefined){
-        node1right.parentid = node1.id
-    }
-    if(node1parent != undefined){
-        if (node1parent.lchildid == node2.id) {
-            node1parent.lchildid = node1.id;
-        } else {
-            node1parent.rchildid = node1.id;
-        }
-    }
     
-    
-
-    node2.x = tempx
-    node2.y = tempy
-    node2.lchildid = templchild
     if(node2.lchildid == node2.id){
         node2.lchildid = node1.id
     }
 
-    node2.rchildid = temprchild
     if(node2.rchildid == node2.id){
         node2.rchildid = node1.id
     }
-
     
-    node2.parentid = tempparentid
     if(node2.parentid == node2.id){
         node2.parentid = node1.id
     }
 
-    let node2left = getleftchild(node2);
-    let node2right = getrightchild(node2);
-    let node2parent = getparent(node2);
-
-    if(node2left != undefined){
-        node2left.parentid = node2.id
-    }
-    if(node2right != undefined){
-        node2right.parentid = node2.id
-    }
-    if(node2parent != undefined){
-        if (node2parent.lchildid == node1.id) {
-            node2parent.lchildid = node2.id;
-        } else {
-            node2parent.rchildid = node2.id;
-        }
-    }    
-    
-    
-    
-    
-    allnodes[node1pos] = node2
-    allnodes[node2pos] = node1
-    console.log("after swap: ")
     console.log($state.snapshot(allnodes))
-    
-    
-    
-    
-    
+
+
+
+
+
+
+    let tempstore1 =  $state.snapshot(node1)
+    let tempstore2 = $state.snapshot(node2)
+
+    let node1index = allnodes.findIndex((node) => node.id == node1.id)
+    let node2index = allnodes.findIndex((node) => node.id == node2.id)
+
+    allnodes[node1index] = tempstore2
+    allnodes[node2index] = tempstore1
+    console.log("nodes swapped!")
+    console.log($state.snapshot(allnodes))
+
 }
-
-
-    //node1.x = node1.x;
-    //node1.y = node2.y;
-
-    //node1.lchildid = node2.lchildid;
-    //node1.rchildid = node2.rchildid;
-
-    // let left = getleftchild(node2);
-    // if (left != undefined) {
-    //     left.parentid = node1.id;
-    // }
-
-    // let right = getrightchild(node2);
-    // if (right != undefined) {
-    //     right.parentid = node1.id;
-    // }
-
-    // let parent = getparent(node2);
-    // if (parent != undefined) {
-    //     if (parent.lchildid == node2.id) {
-    //         parent.lchildid = node1.id;
-    //     } else {
-    //         parent.rchildid = node1.id;
-    //     }
-    // }
-
-    // node1.parentid = node2.parentid;
-
-    // node2.x = tempx;
-    // node2.y = tempy;
-    // node2.lchildid = templchild;
-    // node2.rchildid = temprchild;
-    // node2.parentid = tempparentid;
-
-    // if (node2.lchildid == node2.id) {
-    //     node2.lchildid = node2lchild;
-    //     if (node2lchild != null) {
-    //         let leftchild = getnode(node2lchild);
-    //         if (leftchild != undefined) {
-    //             leftchild.parentid = node2.id;
-    //         }
-    //     }
-    // }
-
-    // if (node2.rchildid == node2.id) {
-    //     node2.rchildid = node2rchild;
-    //     if (node2rchild != null) {
-    //         let rightchild = getnode(node2rchild);
-    //         if (rightchild != undefined) {
-    //             rightchild.parentid = node2.id;
-    //         }
-    //     }
-    // }
-
-    // if (node1left != undefined) {
-    //     node1left.parentid = node2.id;
-    // }
-
-    // if (node1right != undefined) {
-    //     node1right.parentid = node2.id;
-    // }
-
-    // if (node1parent != undefined) {
-    //     if (node1parent.lchildid == node1.id) {
-    //         node1parent.lchildid = node2.id;
-    //     } else {
-    //         node1parent.rchildid = node2.id;
-    //     }
-    // }
-
-
-
-    //node2.parentid = tempparentid;
-
-    //allnodes[node1pos] = node2
-    //allnodes[node2pos] = node1
-
-    //console.log("after swap: ")
-    //console.log($state.snapshot(allnodes));
-
 
 
 export function deleteMin(){
