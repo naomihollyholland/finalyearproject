@@ -13,6 +13,7 @@
     <a href="/binary_tree">Binary tree</a>
 	<a href="/binary_heap">Binary heap</a>
 	<a href="/avl_tree">AVL tree</a>
+	<a href="/red_black_tree">Red-Black tree</a>
 </nav>
 
 
