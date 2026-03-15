@@ -42,10 +42,6 @@ export function recalculate_positions() {
     console.log("after initial update of widths and balances")
     console.log($state.snapshot(allnodes))
 
-    for (let node of allnodes) {
-        // if the node has a balance of greater than two, it is right heavy, so needs its right child left rotated
-
-    }
 
     console.log("rotations all done:")
     console.log($state.snapshot(allnodes))
@@ -126,11 +122,6 @@ export function reevaluate_coordinate(node: Node) {
     }
 }
 
-export function recolour_nodes() {
-    for (let node of allnodes) {
-
-    }
-}
 
 export function comparecolours(node: Node) {
     let root = getroot()
@@ -142,43 +133,143 @@ export function comparecolours(node: Node) {
     let parent = getparent(node)
     let uncle = null
     let grandparent = null
+    let parentisleftchild = false
     if (parent != null) {
-        if (parent.isred) {
+        while (parent != null && parent.isred) {
+            console.log("checking on parent: " + parent.id)
+
             grandparent = getparent(parent)
             if (grandparent != null) {
                 if (grandparent.lchildid == parent.id) {
                     uncle = getrightchild(grandparent)
+                    parentisleftchild = true
                 } else {
                     uncle = getleftchild(grandparent)
+                    parentisleftchild = false
                 }
             }
-        }
-        if (uncle != null && grandparent != null) {
-            if (uncle.isred) {
-                parent.isred = false
-                uncle.isred = false
-                grandparent.isred = true
-                comparecolours(grandparent)
-            } else {
-                if (parent.rchildid = node.id) {
-                    leftrotation(parent)
-                } else {
-                    rightrotation(grandparent)
-                    grandparent.isred = false
+
+            //if the parent is the left child
+            if (parentisleftchild && parent != null && grandparent != null) {
+                //if the uncle is red
+                if (uncle != null && uncle.isred) {
+                    parent.isred = false
+                    uncle.isred = false
+                    grandparent.isred = true
+                    parent = grandparent
+                    node = grandparent
                     parent = getparent(node)
+                } else {
+                    // if the uncle is black (or null)
+                    if (parent.rchildid == node.id) {
+                        console.log("left rotation needed")
+                        leftrotation(parent)
+                        node = parent
+                        parent = getparent(node)
+                        if (parent != null) {
+                            grandparent = getparent(parent)
+                        }
+                    }
                     if (parent != null) {
+                        parent.isred = false
                         grandparent = getparent(parent)
                         if (grandparent != null) {
                             grandparent.isred = true
+                            console.log("right rotation needed on grandparent")
+                            rightrotation(parent)
                         }
                     }
-                    //recolour
+
                 }
             }
-        }
 
+                //if the parent is not the left child
+                if (!parentisleftchild && parent != null && grandparent != null) {
+                    //if the uncle is red
+                    if (uncle != null && uncle.isred) {
+                        parent.isred = false
+                        uncle.isred = false
+                        grandparent.isred = true
+                        parent = grandparent
+                        node = grandparent
+                        parent = getparent(node)
+                    } else {
+                        // if the uncle is black (or null)
+                        if (parent.rchildid == node.id) {
+                            console.log("left rotation needed")
+                            rightrotation(parent)
+                            node = parent
+                            parent = getparent(node)
+                            if (parent != null) {
+                                grandparent = getparent(parent)
+                            }
+                        }
+                        if (parent != null) {
+                            parent.isred = false
+                            grandparent = getparent(parent)
+                            if (grandparent != null) {
+                                grandparent.isred = true
+                                console.log("right rotation needed on grandparent")
+                                leftrotation(parent)
+                            }
+                        }
+
+                    }
+                }
+
+
+
+            
+        }
     }
+    root = getroot()
+    if (root != null) {
+        root.isred = false
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+// grandparent = getparent(parent)
+// if (grandparent != null) {
+//     if (grandparent.lchildid == parent.id) {
+//         uncle = getrightchild(grandparent)
+//     } else {
+//         uncle = getleftchild(grandparent)
+//     }
+// }
+// if (grandparent != null) {
+//     if (uncle != null && uncle.isred) {
+//         parent.isred = false
+//         uncle.isred = false
+//         grandparent.isred = true
+//         comparecolours(grandparent)
+//     } else {
+//         if (parent.rchildid == node.id) {
+//             console.log("left rotation needed")
+//             leftrotation(parent)
+//         } else {
+//             console.log("right rotation needed")
+//             parent.isred = false
+//             rightrotation(parent)
+//             grandparent.isred = true
+
+//         }
+//     }
+// }
+
+
+
 export function calculate_widths(node: Node) {
     let totalwidth = 0;
 
@@ -512,6 +603,16 @@ export function leftrotation(node: Node) {
             leftchild.parentid = parent.id
         }
     }
+
+    if (parent == undefined) {
+        let leftchild = getleftchild(node)
+        if (leftchild != undefined) {
+            leftchild.parentid = node.id
+        }
+    }
+
+
+
     console.log("node's new children: " + node.lchildid + ", " + node.rchildid)
 
 
