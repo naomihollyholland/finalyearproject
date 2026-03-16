@@ -41,25 +41,20 @@ export function recalculate_positions() {
     console.log("after initial update of widths and balances")
     console.log($state.snapshot(allnodes))
 
-    for(let node of allnodes){
+    for (let node of allnodes) {
         // if the node has a balance of greater than two, it is right heavy, so needs its right child left rotated
         getbalances(node)
-        if(node.balance >= 2){
-            console.log("left rotation on right child")
-            let rightchild = getrightchild(node)
-            if(rightchild != undefined){
-                leftrotation(rightchild)
-            }
+        if (node.balance >= 2) {
+            console.log("left rotation")
+            leftrotation(node)
         }
         // if the node has a balance of less than negative two, it is left heavy, so needs its left child right rotated
-        if(node.balance <= -2){
-            console.log("right rotation on left child")
-            let leftchild = getleftchild(node)
-            if(leftchild != undefined){
-                rightrotation(leftchild)
-            }
+        if (node.balance <= -2) {
+            console.log("right rotation")
+            rightrotation(node)
+
         }
-                
+
     }
 
     console.log("rotations all done:")
@@ -71,138 +66,72 @@ export function recalculate_positions() {
         calculate_widths(root);
         reevaluate_coordinate(root)
     }
-
-    console.log($state.snapshot(allnodes))
-
-    // for (let node of allnodes) {
-        // if (node.parentid == null) {
-            // console.log("recalc");
-            // node.x = i[0];
-            // node.y = i[1];
-        // }
-// 
-        // if (node.parentid != null) {
-            // let parentnode = getparent(node);
-            // if (parentnode != undefined) {
-                // node.y = parentnode.y + 125;
-                // if (parentnode.lchildid == node.id) {
-                    // console.log("movement check called on: node " + node.id + " with parent: " + parentnode.id);
-                    // console.log("x value of node: " + node.x +" x value of parent: " + parentnode.x)
-                    // if ((node.x != parentnode.x - (parentnode.width / 3.5))) {
-                        // canvas.clearleftchildline(parentnode);
-                        // node.x = parentnode.x - (parentnode.width / 3.5);
-                        // setTimeout( () => {
-                            // canvas.drawparenttoleftchild(parentnode);
-                        // }, 1000);
-// 
-                        // canvas.clearleftchildline(node);
-                        // setTimeout( () => {
-                            // canvas.drawparenttoleftchild(node);
-                        // }, 1000);
-// 
-                        // canvas.clearrightchildline(node);
-                        // setTimeout( () => {
-                            // canvas.drawparenttorightchild(node);
-                        // }, 1000);
-// 
-                        // console.log("moved node");
-                    // } else {
-                        // console.log("did not move node: " + node.id);
-                    // }
-                // } else {
-                    // console.log(
-                        // "movement check called on: node " + node.id,
-                    // );
-                    // if ((node.x != parentnode.x + (parentnode.width / 3.5))) {
-                        // canvas.clearrightchildline(parentnode);
-                        // node.x = parentnode.x + (parentnode.width / 3.5);
-                        // setTimeout(() => {
-                            // canvas.drawparenttorightchild(parentnode);
-                        // }, 1000);
-// 
-                        // canvas.clearleftchildline(node);
-                        // setTimeout(() => {
-                            // canvas.drawparenttoleftchild(node);
-                        // }, 1000);
-// 
-                        // canvas.clearrightchildline(node);
-                        // setTimeout(() => {
-                            // canvas.drawparenttorightchild(node);
-                        // }, 1000);
-                        // console.log("moved node");
-                    // } else {
-                        // console.log("did not move node: " + node.id)
-                    // }
-                // }
-            // }
-        // }
-    // }
     console.log($state.snapshot(allnodes));
 }
 
-export function reevaluate_coordinate(node:Node){
+export function reevaluate_coordinate(node: Node) {
     let parent = getparent(node)
     let isleftchild = false
-    if(parent == undefined){
+    if (parent == undefined) {
         node.x = i[0]
         node.y = i[1]
         let leftchild = getleftchild(node)
         let rightchild = getrightchild(node)
-        if(leftchild != null){
+        if (leftchild != null) {
             reevaluate_coordinate(leftchild)
         }
-        if(rightchild != null) {
+        if (rightchild != null) {
             reevaluate_coordinate(rightchild)
         }
     }
 
-    if(parent != undefined){
-        if(parent.lchildid == node.id){
-          isleftchild = true
+    if (parent != undefined) {
+        if (parent.lchildid == node.id) {
+            isleftchild = true
         }
         node.y = parent.y + 125
-        if(isleftchild && node.x != parent.x - (parent.width / 3.5)){
+        if (isleftchild && node.x != parent.x - (parent.width / 3.5)) {
             canvas.clearleftchildline(parent);
 
             node.x = parent.x - (parent.width / 3.5)
 
-            setTimeout( () => {
+            setTimeout(() => {
                 canvas.drawparenttoleftchild(parent);
-                }, 1000)
-                canvas.clearleftchildline(node);
-                setTimeout( () => {
-                    canvas.drawparenttoleftchild(node);
-                }, 1000)
-                canvas.clearrightchildline(node);
-                setTimeout( () => {
-                    canvas.drawparenttorightchild(node);
-                }, 1000);
+            }, 1000)
+            canvas.clearleftchildline(node);
+            setTimeout(() => {
+                canvas.drawparenttoleftchild(node);
+            }, 1000)
+            canvas.clearrightchildline(node);
+            setTimeout(() => {
+                canvas.drawparenttorightchild(node);
+            }, 1000);
 
-        } else if (!isleftchild && node.x != parent.x + (parent.width / 3.5)){
-                canvas.clearrightchildline(parent);
-                node.x = parent.x + (parent.width / 3.5);
-                setTimeout(() => {
-                    canvas.drawparenttorightchild(parent);
-                }, 1000)
-                canvas.clearleftchildline(node);
-                setTimeout(() => {
-                    canvas.drawparenttoleftchild(node);
-                }, 1000)
-                canvas.clearrightchildline(node);
-                setTimeout(() => {
-                    canvas.drawparenttorightchild(node);
-                }, 1000);
+        } else if (!isleftchild && node.x != parent.x + (parent.width / 3.5)) {
+            canvas.clearrightchildline(parent);
+            node.x = parent.x + (parent.width / 3.5);
+            setTimeout(() => {
+                canvas.drawparenttorightchild(parent);
+            }, 1000)
+            canvas.clearleftchildline(node);
+            setTimeout(() => {
+                canvas.drawparenttoleftchild(node);
+            }, 1000)
+            canvas.clearrightchildline(node);
+            setTimeout(() => {
+                canvas.drawparenttorightchild(node);
+            }, 1000);
 
-                    
+
         }
     }
 
     let leftchild = getleftchild(node)
     let rightchild = getrightchild(node)
-    if(leftchild != null && leftchild.x != node.x - (node.width / 3.5)){
+    if (leftchild != null && leftchild.x != node.x - (node.width / 3.5)) {
         reevaluate_coordinate(leftchild)
     }
-    if(rightchild != null && rightchild.x != node.x + (node.width / 3.5)) {
+    if (rightchild != null && rightchild.x != node.x + (node.width / 3.5)) {
         reevaluate_coordinate(rightchild)
     }
 }
@@ -405,7 +334,7 @@ export function inordersuccessor(node1: Node) {
     return undefined;
 }
 
-export function deletenode(node_to_delete : number) {
+export function deletenode(node_to_delete: number) {
 
     console.log("node being deleted");
     let node = allnodes.find((node) => node.id === node_to_delete);
@@ -445,7 +374,7 @@ export function deletenode(node_to_delete : number) {
 
         allnodes.splice(index, 1);
 
-        
+
         swapparent = getnode(swapparentid)
         if (swapleft != undefined) {
             console.log(swapleft)
@@ -473,10 +402,10 @@ export function deletenode(node_to_delete : number) {
                 rightchild.parentid = parent.id
                 parent.rchildid = rightchild.id
 
-            } else if(leftchild != undefined) {
+            } else if (leftchild != undefined) {
                 leftchild.parentid = parent.id
                 parent.lchildid = leftchild.id
-            } else{
+            } else {
                 parent.rchildid = null
             }
         } else if (rightchild != undefined && parent == undefined) {
@@ -494,11 +423,11 @@ export function deletenode(node_to_delete : number) {
 
 }
 
-export function getbalances(node :Node){
+export function getbalances(node: Node) {
     let parent = getparent(node)
     let isleft = null
-    if(parent != undefined){
-        if(parent.lchildid == node.id){
+    if (parent != undefined) {
+        if (parent.lchildid == node.id) {
             isleft = true
         } else {
             isleft = false
@@ -509,18 +438,18 @@ export function getbalances(node :Node){
     let leftheight = 0
     let rightchild = getrightchild(node)
     let rightheight = 0
-    if(leftchild != undefined){
+    if (leftchild != undefined) {
         leftheight = getbalances(leftchild)
     }
-    if (rightchild != undefined){
+    if (rightchild != undefined) {
         rightheight = getbalances(rightchild)
     }
-    if(leftchild == undefined && rightchild == undefined){
+    if (leftchild == undefined && rightchild == undefined) {
         node.balance = 0
         return 1;
     }
     let largestheight = 0
-    if(leftheight <= rightheight){
+    if (leftheight <= rightheight) {
         largestheight = rightheight
         node.balance = rightheight - leftheight
     } else {
@@ -530,98 +459,175 @@ export function getbalances(node :Node){
     return largestheight + 1
 
 }
+export function leftrotation(tobeleft: Node) {
 
-export function leftrotation(node:Node){
-    let leftchild = getleftchild(node)
-    let parent = getparent(node)
 
-    //get the parent's parent, set the child to be its new child
-    let grandparent = undefined
-    if(parent != undefined){
-        grandparent = getparent(parent)
-    }
-    console.log("grandparent children id: " + grandparent?.lchildid + ", " + grandparent?.rchildid)
-        console.log("node parent id: " + node.parentid)
+    let child = getrightchild(tobeleft)
+    let parent = getparent(tobeleft)
 
-    if(grandparent != undefined && parent != undefined){
-        if(grandparent.lchildid == parent.id){
-            grandparent.lchildid = node.id
-            node.parentid = grandparent.id
+    if (parent && child) {
+        if (parent.lchildid == tobeleft.id) {
+            parent.lchildid = child.id
         } else {
-            grandparent.rchildid = node.id
-            node.parentid = grandparent.id
+            parent.rchildid = child.id
+        }
+        child.parentid = parent.id
+    } else {
+        if (child) {
+            child.parentid = null
         }
     }
-    if(grandparent == undefined){
-        node.parentid = null
-    }
-    console.log("grandparent children id: " + grandparent?.lchildid + ", " + grandparent?.rchildid)
-    console.log("node parent id: " + node.parentid)
 
-    //if the node has left children, they need to become the parents right children, so we should store them
-    let idofleftchild = null
-    if(leftchild != undefined){
-        idofleftchild = leftchild.id
+    let leftchildofchild = null
+    if (child) {
+        leftchildofchild = getleftchild(child)
     }
 
-    console.log("id of the node's left child: " + idofleftchild)
-    // if the node had a parent, it needs to become the node's left child
-    //if the node had a left child, it needs to become the right child of the parent
-    if(parent != undefined){
-        node.lchildid = parent.id
-        parent.parentid = node.id
-        parent.rchildid = idofleftchild
-        if(leftchild != undefined){
-            leftchild.parentid = parent.id
+    if (child && tobeleft) {
+        child.lchildid = tobeleft.id
+        tobeleft.parentid = child.id
+        if (leftchildofchild) {
+            tobeleft.rchildid = leftchildofchild.id
+            leftchildofchild.parentid = tobeleft.id
+        }
+        if (tobeleft.lchildid == child.id) {
+            tobeleft.lchildid = null
+        } else if (tobeleft.rchildid == child.id) {
+            tobeleft.rchildid = null
         }
     }
-    console.log("node's new children: " + node.lchildid + ", " + node.rchildid)
-
-
 }
 
-export function rightrotation(node:Node){
+export function rightrotation(toberight: Node) {
 
-    let rightchild = getrightchild(node)
-    let parent = getparent(node)
 
-    //get the parent's parent, set the child to be its new child
-    let grandparent = undefined
-    if(parent != undefined){
-        grandparent = getparent(parent)
-    }
-    if(grandparent != undefined && parent != undefined){
-        if(grandparent.lchildid == parent.id){
-            grandparent.lchildid = node.id
-            node.parentid = grandparent.id
+    let child = getleftchild(toberight)
+    let parent = getparent(toberight)
+
+    if (parent && child) {
+        if (parent.lchildid == toberight.id) {
+            parent.lchildid = child.id
         } else {
-            grandparent.rchildid = node.id
-            node.parentid = grandparent.id
+            parent.rchildid = child.id
+        }
+        child.parentid = parent.id
+    } else {
+        if (child) {
+            child.parentid = null
         }
     }
-    if(grandparent == undefined){
-        node.parentid = null
-    }
-    //if the node has left children, they need to become the parents right children, so we should store them
-    let idofrightchild = null
-    if(rightchild != undefined){
-        idofrightchild = rightchild.id
+
+    let rightchildofchild = null
+    if (child) {
+        rightchildofchild = getrightchild(child)
     }
 
-    console.log("id of the node's right child: " + idofrightchild)
-    // if the node had a parent, it needs to become the node's left child
-    //if the node had a left child, it needs to become the right child of the parent
-    if(parent != undefined){
-        node.rchildid = parent.id
-        parent.parentid = node.id
-        parent.lchildid = idofrightchild
-        if(rightchild != undefined){
-            rightchild.parentid = parent.id
+    if (child && toberight) {
+        child.rchildid = toberight.id
+        toberight.parentid = child.id
+        if (rightchildofchild) {
+            toberight.lchildid = rightchildofchild.id
+            rightchildofchild.parentid = toberight.id
+        }
+        if (toberight.lchildid == child.id) {
+            toberight.lchildid = null
+        } else if (toberight.rchildid == child.id) {
+            toberight.rchildid = null
         }
     }
-    console.log("node's new children: " + node.lchildid + ", " + node.rchildid)
-
 }
+
+// export function leftrotation(node:Node){
+//     let leftchild = getleftchild(node)
+//     let parent = getparent(node)
+
+//     //get the parent's parent, set the child to be its new child
+//     let grandparent = undefined
+//     if(parent != undefined){
+//         grandparent = getparent(parent)
+//     }
+//     console.log("grandparent children id: " + grandparent?.lchildid + ", " + grandparent?.rchildid)
+//         console.log("node parent id: " + node.parentid)
+
+//     if(grandparent != undefined && parent != undefined){
+//         if(grandparent.lchildid == parent.id){
+//             grandparent.lchildid = node.id
+//             node.parentid = grandparent.id
+//         } else {
+//             grandparent.rchildid = node.id
+//             node.parentid = grandparent.id
+//         }
+//     }
+//     if(grandparent == undefined){
+//         node.parentid = null
+//     }
+//     console.log("grandparent children id: " + grandparent?.lchildid + ", " + grandparent?.rchildid)
+//     console.log("node parent id: " + node.parentid)
+
+//     //if the node has left children, they need to become the parents right children, so we should store them
+//     let idofleftchild = null
+//     if(leftchild != undefined){
+//         idofleftchild = leftchild.id
+//     }
+
+//     console.log("id of the node's left child: " + idofleftchild)
+//     // if the node had a parent, it needs to become the node's left child
+//     //if the node had a left child, it needs to become the right child of the parent
+//     if(parent != undefined){
+//         node.lchildid = parent.id
+//         parent.parentid = node.id
+//         parent.rchildid = idofleftchild
+//         if(leftchild != undefined){
+//             leftchild.parentid = parent.id
+//         }
+//     }
+//     console.log("node's new children: " + node.lchildid + ", " + node.rchildid)
+
+
+// }
+
+// export function rightrotation(node:Node){
+
+//     let rightchild = getrightchild(node)
+//     let parent = getparent(node)
+
+//     //get the parent's parent, set the child to be its new child
+//     let grandparent = undefined
+//     if(parent != undefined){
+//         grandparent = getparent(parent)
+//     }
+//     if(grandparent != undefined && parent != undefined){
+//         if(grandparent.lchildid == parent.id){
+//             grandparent.lchildid = node.id
+//             node.parentid = grandparent.id
+//         } else {
+//             grandparent.rchildid = node.id
+//             node.parentid = grandparent.id
+//         }
+//     }
+//     if(grandparent == undefined){
+//         node.parentid = null
+//     }
+//     //if the node has left children, they need to become the parents right children, so we should store them
+//     let idofrightchild = null
+//     if(rightchild != undefined){
+//         idofrightchild = rightchild.id
+//     }
+
+//     console.log("id of the node's right child: " + idofrightchild)
+//     // if the node had a parent, it needs to become the node's left child
+//     //if the node had a left child, it needs to become the right child of the parent
+//     if(parent != undefined){
+//         node.rchildid = parent.id
+//         parent.parentid = node.id
+//         parent.lchildid = idofrightchild
+//         if(rightchild != undefined){
+//             rightchild.parentid = parent.id
+//         }
+//     }
+//     console.log("node's new children: " + node.lchildid + ", " + node.rchildid)
+
+// }
 
 export function placenode(node1: Node, node2: Node) {
     console.log($state.snapshot(allnodes));
@@ -667,8 +673,8 @@ export function placenode(node1: Node, node2: Node) {
     }
 }
 
-export function push(nodeinputvalue : number) {
-    if(!Number.isInteger(nodeinputvalue)){
+export function push(nodeinputvalue: number) {
+    if (!Number.isInteger(nodeinputvalue)) {
         return;
     }
     let i = 0;
