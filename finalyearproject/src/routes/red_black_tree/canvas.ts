@@ -24,8 +24,8 @@ export function clearlines() {
 }
 
 export function drawlines() {
-    console.log("canvas: " + canvas);
-    console.log("ctx: " + ctx);
+    //console.log("canvas: " + canvas);
+    //console.log("ctx: " + ctx);
     if (ctx != undefined && canvas != undefined) {
         for (let node of treestruct.getNodes()) {
             ctx.beginPath();
@@ -91,16 +91,16 @@ export function clearleftchildline(node1: Node) {
         if (rightpos - leftpos < 0) {
             fin = node1.width;
         }
-        console.log(
-            "clearing rectangle of: " +
-            fin +
-            ", " +
-            height +
-            " starting at: " +
-            leftpos +
-            ", " +
-            node1.y,
-        );
+    //    console.log(
+    //         "clearing rectangle of: " +
+    //         fin +
+    //         ", " +
+    //         height +
+    //         " starting at: " +
+    //         leftpos +
+    //         ", " +
+    //         node1.y,
+    //     );
         ctx.clearRect(leftpos, node1.y, fin, height);
     }
 }
@@ -121,16 +121,16 @@ export function clearrightchildline(node1: Node) {
         if (rightpos - leftpos < 0) {
             fin = node1.width;
         }
-        console.log(
-            "clearing rectangle of: " +
-            fin +
-            ", " +
-            height +
-            "starting at: " +
-            leftpos +
-            ", " +
-            node1.y,
-        );
+        // console.log(
+        //     "clearing rectangle of: " +
+        //     fin +
+        //     ", " +
+        //     height +
+        //     "starting at: " +
+        //     leftpos +
+        //     ", " +
+        //     node1.y,
+        // );
         ctx.clearRect(leftpos, node1.y, fin, height);
     }
 }

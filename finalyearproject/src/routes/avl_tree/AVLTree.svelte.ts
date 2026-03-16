@@ -45,12 +45,12 @@ export function recalculate_positions() {
         // if the node has a balance of greater than two, it is right heavy, so needs its right child left rotated
         getbalances(node)
         if (node.balance >= 2) {
-            console.log("left rotation")
+            console.log("left rotation on node: " + node.id)
             leftrotation(node)
         }
         // if the node has a balance of less than negative two, it is left heavy, so needs its left child right rotated
         if (node.balance <= -2) {
-            console.log("right rotation")
+            console.log("right rotation on node: " + node.id)
             rightrotation(node)
 
         }
@@ -537,97 +537,7 @@ export function rightrotation(toberight: Node) {
     }
 }
 
-// export function leftrotation(node:Node){
-//     let leftchild = getleftchild(node)
-//     let parent = getparent(node)
 
-//     //get the parent's parent, set the child to be its new child
-//     let grandparent = undefined
-//     if(parent != undefined){
-//         grandparent = getparent(parent)
-//     }
-//     console.log("grandparent children id: " + grandparent?.lchildid + ", " + grandparent?.rchildid)
-//         console.log("node parent id: " + node.parentid)
-
-//     if(grandparent != undefined && parent != undefined){
-//         if(grandparent.lchildid == parent.id){
-//             grandparent.lchildid = node.id
-//             node.parentid = grandparent.id
-//         } else {
-//             grandparent.rchildid = node.id
-//             node.parentid = grandparent.id
-//         }
-//     }
-//     if(grandparent == undefined){
-//         node.parentid = null
-//     }
-//     console.log("grandparent children id: " + grandparent?.lchildid + ", " + grandparent?.rchildid)
-//     console.log("node parent id: " + node.parentid)
-
-//     //if the node has left children, they need to become the parents right children, so we should store them
-//     let idofleftchild = null
-//     if(leftchild != undefined){
-//         idofleftchild = leftchild.id
-//     }
-
-//     console.log("id of the node's left child: " + idofleftchild)
-//     // if the node had a parent, it needs to become the node's left child
-//     //if the node had a left child, it needs to become the right child of the parent
-//     if(parent != undefined){
-//         node.lchildid = parent.id
-//         parent.parentid = node.id
-//         parent.rchildid = idofleftchild
-//         if(leftchild != undefined){
-//             leftchild.parentid = parent.id
-//         }
-//     }
-//     console.log("node's new children: " + node.lchildid + ", " + node.rchildid)
-
-
-// }
-
-// export function rightrotation(node:Node){
-
-//     let rightchild = getrightchild(node)
-//     let parent = getparent(node)
-
-//     //get the parent's parent, set the child to be its new child
-//     let grandparent = undefined
-//     if(parent != undefined){
-//         grandparent = getparent(parent)
-//     }
-//     if(grandparent != undefined && parent != undefined){
-//         if(grandparent.lchildid == parent.id){
-//             grandparent.lchildid = node.id
-//             node.parentid = grandparent.id
-//         } else {
-//             grandparent.rchildid = node.id
-//             node.parentid = grandparent.id
-//         }
-//     }
-//     if(grandparent == undefined){
-//         node.parentid = null
-//     }
-//     //if the node has left children, they need to become the parents right children, so we should store them
-//     let idofrightchild = null
-//     if(rightchild != undefined){
-//         idofrightchild = rightchild.id
-//     }
-
-//     console.log("id of the node's right child: " + idofrightchild)
-//     // if the node had a parent, it needs to become the node's left child
-//     //if the node had a left child, it needs to become the right child of the parent
-//     if(parent != undefined){
-//         node.rchildid = parent.id
-//         parent.parentid = node.id
-//         parent.lchildid = idofrightchild
-//         if(rightchild != undefined){
-//             rightchild.parentid = parent.id
-//         }
-//     }
-//     console.log("node's new children: " + node.lchildid + ", " + node.rchildid)
-
-// }
 
 export function placenode(node1: Node, node2: Node) {
     console.log($state.snapshot(allnodes));
