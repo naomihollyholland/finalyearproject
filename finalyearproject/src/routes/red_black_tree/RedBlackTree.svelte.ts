@@ -134,9 +134,11 @@ export function comparecolours(node: Node) {
     let uncle = null
     let grandparent = null
     let parentisleftchild = false
+    let current = parent
     if (parent != null) {
-        while (parent != null && parent.isred) {
-            console.log("checking on parent: " + parent.id)
+        while (current != null && current.isred) {
+            let check = false
+            console.log("checking on parent: " + current.id)
 
             grandparent = getparent(parent)
             if (grandparent != null) {
@@ -151,75 +153,71 @@ export function comparecolours(node: Node) {
 
             //if the parent is the left child
             if (parentisleftchild && parent != null && grandparent != null) {
+                //if the uncle is red, parent left
+                if (uncle != null && uncle.isred) {
+                    parent.isred = false
+                    uncle.isred = false
+                    grandparent.isred = true
+                    current = grandparent
+                } else {
+                    // if the uncle is black (or null), parent left, node right child of parent
+                    if (parent.rchildid == node.id) {
+                        console.log("left rotation needed")
+                        leftrotation(parent)
+                        console.log($state.snapshot(allnodes))
+                        check = true
+                    }
+                    // if the uncle is black (or null), parent left
+                    if (parent != null) {
+
+                        console.log("right rotation needed on grandparent")
+                        rightrotation(grandparent)
+                        console.log($state.snapshot(allnodes))
+
+                    }
+                    if (check) {
+                        node.isred = false
+                        grandparent.isred = true
+                    } else {
+                        parent.isred = false
+                        grandparent.isred = true
+                    }
+                    current = undefined
+                }
+            }
+
+            //if the parent is not the left child
+            if (!parentisleftchild && parent != null && grandparent != null) {
                 //if the uncle is red
                 if (uncle != null && uncle.isred) {
                     parent.isred = false
                     uncle.isred = false
                     grandparent.isred = true
-                    parent = grandparent
-                    node = grandparent
-                    parent = getparent(node)
+                    current = grandparent
                 } else {
                     // if the uncle is black (or null)
                     if (parent.rchildid == node.id) {
-                        console.log("left rotation needed")
-                        leftrotation(parent)
-                        node = parent
-                        parent = getparent(node)
-                        if (parent != null) {
-                            grandparent = getparent(parent)
-                        }
+                        console.log("right rotation needed")
+                        rightrotation(parent)
+                        console.log($state.snapshot(allnodes))
+                        check = true
                     }
                     if (parent != null) {
-                        parent.isred = false
-                        grandparent = getparent(parent)
-                        if (grandparent != null) {
-                            grandparent.isred = true
-                            console.log("right rotation needed on grandparent")
-                            rightrotation(parent)
-                        }
+                        console.log("left rotation needed on grandparent")
+                        leftrotation(grandparent)
+                        console.log($state.snapshot(allnodes))
                     }
+                    if (check) {
+                        node.isred = false
+                        grandparent.isred = true
+                    } else {
+                        parent.isred = false
+                        grandparent.isred = true
+                    }
+                    current = undefined
 
                 }
             }
-
-                //if the parent is not the left child
-                if (!parentisleftchild && parent != null && grandparent != null) {
-                    //if the uncle is red
-                    if (uncle != null && uncle.isred) {
-                        parent.isred = false
-                        uncle.isred = false
-                        grandparent.isred = true
-                        parent = grandparent
-                        node = grandparent
-                        parent = getparent(node)
-                    } else {
-                        // if the uncle is black (or null)
-                        if (parent.rchildid == node.id) {
-                            console.log("left rotation needed")
-                            rightrotation(parent)
-                            node = parent
-                            parent = getparent(node)
-                            if (parent != null) {
-                                grandparent = getparent(parent)
-                            }
-                        }
-                        if (parent != null) {
-                            parent.isred = false
-                            grandparent = getparent(parent)
-                            if (grandparent != null) {
-                                grandparent.isred = true
-                                console.log("right rotation needed on grandparent")
-                                leftrotation(parent)
-                            }
-                        }
-
-                    }
-                }
-
-
-
-            
         }
     }
     root = getroot()
@@ -228,45 +226,6 @@ export function comparecolours(node: Node) {
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-// grandparent = getparent(parent)
-// if (grandparent != null) {
-//     if (grandparent.lchildid == parent.id) {
-//         uncle = getrightchild(grandparent)
-//     } else {
-//         uncle = getleftchild(grandparent)
-//     }
-// }
-// if (grandparent != null) {
-//     if (uncle != null && uncle.isred) {
-//         parent.isred = false
-//         uncle.isred = false
-//         grandparent.isred = true
-//         comparecolours(grandparent)
-//     } else {
-//         if (parent.rchildid == node.id) {
-//             console.log("left rotation needed")
-//             leftrotation(parent)
-//         } else {
-//             console.log("right rotation needed")
-//             parent.isred = false
-//             rightrotation(parent)
-//             grandparent.isred = true
-
-//         }
-//     }
-// }
 
 
 
@@ -559,107 +518,138 @@ export function deletenode(node_to_delete: number) {
 
 
 
-export function leftrotation(node: Node) {
-    let leftchild = getleftchild(node)
-    let parent = getparent(node)
+export function leftrotation(tobeleft: Node) {
 
-    //get the parent's parent, set the child to be its new child
-    let grandparent = undefined
-    if (parent != undefined) {
-        grandparent = getparent(parent)
-    }
-    console.log("grandparent children id: " + grandparent?.lchildid + ", " + grandparent?.rchildid)
-    console.log("node parent id: " + node.parentid)
 
-    if (grandparent != undefined && parent != undefined) {
-        if (grandparent.lchildid == parent.id) {
-            grandparent.lchildid = node.id
-            node.parentid = grandparent.id
+    let child = getrightchild(tobeleft)
+    let parent = getparent(tobeleft)
+
+    if (parent && child) {
+        if (parent.lchildid == tobeleft.id) {
+            parent.lchildid = child.id
         } else {
-            grandparent.rchildid = node.id
-            node.parentid = grandparent.id
+            parent.rchildid = child.id
         }
-    }
-    if (grandparent == undefined) {
-        node.parentid = null
-    }
-    console.log("grandparent children id: " + grandparent?.lchildid + ", " + grandparent?.rchildid)
-    console.log("node parent id: " + node.parentid)
-
-    //if the node has left children, they need to become the parents right children, so we should store them
-    let idofleftchild = null
-    if (leftchild != undefined) {
-        idofleftchild = leftchild.id
-    }
-
-    console.log("id of the node's left child: " + idofleftchild)
-    // if the node had a parent, it needs to become the node's left child
-    //if the node had a left child, it needs to become the right child of the parent
-    if (parent != undefined) {
-        node.lchildid = parent.id
-        parent.parentid = node.id
-        parent.rchildid = idofleftchild
-        if (leftchild != undefined) {
-            leftchild.parentid = parent.id
+        child.parentid = parent.id
+    } else {
+        if (child) {
+            child.parentid = null
         }
     }
 
-    if (parent == undefined) {
-        let leftchild = getleftchild(node)
-        if (leftchild != undefined) {
-            leftchild.parentid = node.id
-        }
+    let leftchildofchild = null
+    if (child) {
+        leftchildofchild = getleftchild(child)
     }
 
-
-
-    console.log("node's new children: " + node.lchildid + ", " + node.rchildid)
-
-
+    if (child && tobeleft) {
+        child.lchildid = tobeleft.id
+        tobeleft.parentid = child.id
+        if (leftchildofchild) {
+            tobeleft.rchildid = leftchildofchild.id
+            leftchildofchild.parentid = tobeleft.id
+        }
+        if (tobeleft.lchildid == child.id) {
+            tobeleft.lchildid = null
+        } else if (tobeleft.rchildid == child.id) {
+            tobeleft.rchildid = null
+        }
+    }
 }
 
-export function rightrotation(node: Node) {
+export function rightrotation(toberight: Node) {
 
-    let rightchild = getrightchild(node)
-    let parent = getparent(node)
 
-    //get the parent's parent, set the child to be its new child
-    let grandparent = undefined
-    if (parent != undefined) {
-        grandparent = getparent(parent)
-    }
-    if (grandparent != undefined && parent != undefined) {
-        if (grandparent.lchildid == parent.id) {
-            grandparent.lchildid = node.id
-            node.parentid = grandparent.id
+    let child = getleftchild(toberight)
+    let parent = getparent(toberight)
+
+    if (parent && child) {
+        if (parent.lchildid == toberight.id) {
+            parent.lchildid = child.id
         } else {
-            grandparent.rchildid = node.id
-            node.parentid = grandparent.id
+            parent.rchildid = child.id
+        }
+        child.parentid = parent.id
+    } else {
+        if (child) {
+            child.parentid = null
         }
     }
-    if (grandparent == undefined) {
-        node.parentid = null
-    }
-    //if the node has left children, they need to become the parents right children, so we should store them
-    let idofrightchild = null
-    if (rightchild != undefined) {
-        idofrightchild = rightchild.id
+
+    let rightchildofchild = null
+    if (child) {
+        rightchildofchild = getrightchild(child)
     }
 
-    console.log("id of the node's right child: " + idofrightchild)
-    // if the node had a parent, it needs to become the node's left child
-    //if the node had a left child, it needs to become the right child of the parent
-    if (parent != undefined) {
-        node.rchildid = parent.id
-        parent.parentid = node.id
-        parent.lchildid = idofrightchild
-        if (rightchild != undefined) {
-            rightchild.parentid = parent.id
+    if (child && toberight) {
+        child.rchildid = toberight.id
+        toberight.parentid = child.id
+        if (rightchildofchild) {
+            toberight.lchildid = rightchildofchild.id
+            rightchildofchild.parentid = toberight.id
+        }
+        if (toberight.lchildid == child.id) {
+            toberight.lchildid = null
+        } else if (toberight.rchildid == child.id) {
+            toberight.rchildid = null
         }
     }
-    console.log("node's new children: " + node.lchildid + ", " + node.rchildid)
-
 }
+
+
+
+
+
+
+
+
+
+
+
+// export function rightrotation(node: Node) {
+// 
+// let rightchild = getrightchild(node)
+// let parent = getparent(node)
+// 
+//get the parent's parent, set the child to be its new child
+// let grandparent = undefined
+// if (parent != undefined) {
+// grandparent = getparent(parent)
+// }
+// if (grandparent != undefined && parent != undefined) {
+// if (grandparent.lchildid == parent.id) {
+// grandparent.lchildid = node.id
+// node.parentid = grandparent.id
+// } else {
+// grandparent.rchildid = node.id
+// node.parentid = grandparent.id
+// }
+// }
+// if (grandparent == undefined) {
+// node.parentid = null
+// }
+//if the node has left children, they need to become the parents right children, so we should store them
+// let idofrightchild = null
+// if (rightchild != undefined) {
+// idofrightchild = rightchild.id
+// }
+// 
+// console.log("id of the node's right child: " + idofrightchild)
+//if the node had a parent, it needs to become the node's left child
+//if the node had a left child, it needs to become the right child of the parent
+// if (parent != undefined) {
+// node.rchildid = parent.id
+// parent.parentid = node.id
+// parent.lchildid = idofrightchild
+// if (rightchild != undefined) {
+// rightchild.parentid = parent.id
+// }
+// }
+// console.log("node's new children: " + node.lchildid + ", " + node.rchildid)
+// 
+// 
+// 
+// }
 
 export function placenode(node1: Node, node2: Node) {
     console.log($state.snapshot(allnodes));
@@ -709,12 +699,12 @@ export function push(nodeinputvalue: number) {
     if (!Number.isInteger(nodeinputvalue)) {
         return;
     }
-    let i = 0;
-    while (allnodes.find((node) => node.id === i)) {
-        i = i + 1;
+    let id = 0;
+    while (allnodes.find((node) => node.id === id)) {
+        id = id + 1;
     }
     let node = {
-        id: i,
+        id: id,
         val: nodeinputvalue,
         x: 500,
         y: 500,
@@ -729,6 +719,13 @@ export function push(nodeinputvalue: number) {
         allnodes.push(node);
     } else {
         placenode(node, getroot() as Node);
+        let parent = getparent(node)
+        if (parent != undefined) {
+            node.y = parent.y + 125
+        } else {
+            node.y = i[1]
+        }
+
         allnodes.push(node);
     }
     console.log("node id: " + node.id + " pushed")
