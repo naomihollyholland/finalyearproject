@@ -138,9 +138,9 @@ export function comparecolours(node: Node) {
     if(node){
         current = node
     }
+    let currentparent = parent
     if (current != null) {
-        while (current != null && current.isred) {
-            let check = false
+        while (current != null && currentparent != null && current.isred && currentparent.isred) {
             console.log("checking on parent: " + current.id)
             parent = getparent(current)
             uncle = null
@@ -158,11 +158,11 @@ export function comparecolours(node: Node) {
                     parentisleftchild = false
                 }
             } else {
-                current = undefined
+                current = null
             }
 
             //if the parent is the left child
-            if (parentisleftchild && grandparent != null && parent != null) {
+            if (current != null && parentisleftchild && grandparent != null && parent != null) {
                 //if the uncle is red, parent left
                 if (uncle != null && uncle.isred) {
                     console.log("uncle is red, the parent is the left child")
@@ -171,6 +171,7 @@ export function comparecolours(node: Node) {
                     uncle.isred = false
                     grandparent.isred = true
                     current = grandparent
+                    currentparent = getparent(grandparent)
                     
                     console.log("pushing blackness down from grandparent")
                     console.log($state.snapshot(allnodes))
@@ -179,30 +180,30 @@ export function comparecolours(node: Node) {
 
                 } else {
                     // if the uncle is black (or null), parent left, node right child of parent
-                    if (parent.rchildid == node.id) {
+                    if (parent.rchildid == current.id) {
                         console.log("left rotation needed" + parent.id)
                         leftrotation(parent)
                         console.log($state.snapshot(allnodes))
-                        check = true
-                    }
-
-                    console.log("right rotation needed on grandparent: " + grandparent.id)
-                    rightrotation(grandparent)
-                    console.log($state.snapshot(allnodes))
-
-                    if (check) {
-                        node.isred = false
+                        console.log("right rotation needed on grandparent: " + grandparent.id)
+                        rightrotation(grandparent)
+                        console.log($state.snapshot(allnodes))
+                        current.isred = false
                         grandparent.isred = true
                     } else {
+                    //if the uncle is black or null, parent is left, and the node is left
+                    console.log("right rotation needed on grandparent: " + grandparent.id)
+                        rightrotation(grandparent)
+                        console.log($state.snapshot(allnodes))
                         parent.isred = false
                         grandparent.isred = true
                     }
-                    current = undefined
+
+                    current = null
                 }
             }
 
             //if the parent is not the left child
-            else if (!parentisleftchild && parent != null && grandparent != null) {
+            else if (current != null && !parentisleftchild && parent != null && grandparent != null) {
                 //if the uncle is red
                 console.log(uncle)
                 if (uncle != null && uncle.isred) {
@@ -212,29 +213,29 @@ export function comparecolours(node: Node) {
                     uncle.isred = false
                     grandparent.isred = true
                     current = grandparent
+                    currentparent = getparent(grandparent)
                     console.log("pushing blackness down from grandparent")
                     console.log($state.snapshot(allnodes))
                     console.log(uncle.isred)
                 } else {
                     // if the uncle is black (or null)
-                    if (parent.lchildid == node.id) {
+                    if (parent.lchildid == current.id) {
                         console.log("right rotation needed on: " + parent.id)
                         rightrotation(parent)
                         console.log($state.snapshot(allnodes))
-                        check = true
-                    }
-                    console.log("left rotation needed on grandparent: " + grandparent.id)
-                    leftrotation(grandparent)
-                    console.log($state.snapshot(allnodes))
-                
-                    if (check) {
-                        node.isred = false
+                        console.log("left rotation needed on grandparent: " + grandparent.id)
+                        leftrotation(grandparent)
+                        console.log($state.snapshot(allnodes))
+                        current.isred = false
                         grandparent.isred = true
                     } else {
+                        console.log("left rotation needed on grandparent: " + grandparent.id)
+                        leftrotation(grandparent)
+                        console.log($state.snapshot(allnodes))
                         parent.isred = false
                         grandparent.isred = true
                     }
-                    current = undefined
+                    current = null
 
                 }
             }
