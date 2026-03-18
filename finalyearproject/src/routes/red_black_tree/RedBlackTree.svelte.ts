@@ -161,6 +161,10 @@ export function comparecolours(node: Node) {
                 current = null
             }
 
+            
+
+        
+
             //if the parent is the left child
             if (current != null && parentisleftchild && grandparent != null && parent != null) {
                 //if the uncle is red, parent left
@@ -187,7 +191,11 @@ export function comparecolours(node: Node) {
                         console.log("right rotation needed on grandparent: " + grandparent.id)
                         rightrotation(grandparent)
                         console.log($state.snapshot(allnodes))
-                        current.isred = false
+
+                        let node = getnode(current.id)
+                        if(node != null){
+                            node.isred = false
+                        }
                         grandparent.isred = true
                     } else {
                     //if the uncle is black or null, parent is left, and the node is left
@@ -210,7 +218,9 @@ export function comparecolours(node: Node) {
                 console.log("uncle is red, the parent is the right child")
                     console.log(uncle.isred)
                     parent.isred = false
+                    if(uncle != null){
                     uncle.isred = false
+                    }
                     grandparent.isred = true
                     current = grandparent
                     currentparent = getparent(grandparent)
@@ -226,7 +236,10 @@ export function comparecolours(node: Node) {
                         console.log("left rotation needed on grandparent: " + grandparent.id)
                         leftrotation(grandparent)
                         console.log($state.snapshot(allnodes))
-                        current.isred = false
+                        let node = getnode(current.id)
+                        if(node != null){
+                            node.isred = false
+                        }
                         grandparent.isred = true
                     } else {
                         console.log("left rotation needed on grandparent: " + grandparent.id)
