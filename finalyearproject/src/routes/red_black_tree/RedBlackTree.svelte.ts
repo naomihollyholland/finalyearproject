@@ -135,7 +135,7 @@ export function comparecolours(node: Node) {
     let grandparent = null
     let parentisleftchild = false
     let current = null
-    if(node){
+    if (node) {
         current = node
     }
     let currentparent = parent
@@ -144,7 +144,7 @@ export function comparecolours(node: Node) {
             console.log("checking on parent: " + current.id)
             parent = getparent(current)
             uncle = null
-            if(parent != null){
+            if (parent != null) {
                 grandparent = getparent(parent)
             } else {
                 grandparent = null
@@ -161,9 +161,9 @@ export function comparecolours(node: Node) {
                 current = null
             }
 
-            
 
-        
+
+
 
             //if the parent is the left child
             if (current != null && parentisleftchild && grandparent != null && parent != null) {
@@ -176,7 +176,7 @@ export function comparecolours(node: Node) {
                     grandparent.isred = true
                     current = grandparent
                     currentparent = getparent(grandparent)
-                    
+
                     console.log("pushing blackness down from grandparent")
                     console.log($state.snapshot(allnodes))
                     console.log(uncle.isred)
@@ -193,13 +193,13 @@ export function comparecolours(node: Node) {
                         console.log($state.snapshot(allnodes))
 
                         let node = getnode(current.id)
-                        if(node != null){
+                        if (node != null) {
                             node.isred = false
                         }
                         grandparent.isred = true
                     } else {
-                    //if the uncle is black or null, parent is left, and the node is left
-                    console.log("right rotation needed on grandparent: " + grandparent.id)
+                        //if the uncle is black or null, parent is left, and the node is left
+                        console.log("right rotation needed on grandparent: " + grandparent.id)
                         rightrotation(grandparent)
                         console.log($state.snapshot(allnodes))
                         parent.isred = false
@@ -215,11 +215,11 @@ export function comparecolours(node: Node) {
                 //if the uncle is red
                 console.log(uncle)
                 if (uncle != null && uncle.isred) {
-                console.log("uncle is red, the parent is the right child")
+                    console.log("uncle is red, the parent is the right child")
                     console.log(uncle.isred)
                     parent.isred = false
-                    if(uncle != null){
-                    uncle.isred = false
+                    if (uncle != null) {
+                        uncle.isred = false
                     }
                     grandparent.isred = true
                     current = grandparent
@@ -237,7 +237,7 @@ export function comparecolours(node: Node) {
                         leftrotation(grandparent)
                         console.log($state.snapshot(allnodes))
                         let node = getnode(current.id)
-                        if(node != null){
+                        if (node != null) {
                             node.isred = false
                         }
                         grandparent.isred = true
@@ -472,22 +472,53 @@ export function deletenode(node_to_delete: number) {
     let swap = getswapcandidate(node);
     let parent = getparent(node);
 
-    //if there is an in order successor
+    if (swap == null) {
+        swap = getrightchild(node)
+    }
+
+    //swap is either the right child of the deleting node, or the in order successor
     if (swap != null) {
+        console.log("in order successor found!")
         let swapparent = getparent(swap)
         let swapleft = getleftchild(swap)
 
-        if (swap && swapleft) {
-            if (swapleft.isred || swap.isred) {
-                swapleft.isred = false
+        //if swap exists and so does its child
+        //node is replacing swap, so we compare those colours
+        if (swap != null && node != null) {
+
+            //swapleft is black or a null node
+            if (swapleft == null || !swapleft.isred) {
+
+                if (node.isred) {
+                    // mark the replacing node as black
+                    if (swapleft != null) {
+                        swapleft.isred = false
+                    }
+                }
+
+                if (!node.isred) {
+                    //double black situation
+                    doubleblack = true
+                }
+
+            } else {
+                //swapleft must exist and be red
+
+                if (!node.isred) {
+                    swapleft.isred = false
+                }
+
+                if (node.isred) {
+                    //this should never happen, so im just gonna log something here
+                    console.log("double red situation, should be impossible")
+
+                }
+
+
             }
 
-        }
 
-        if ((swapleft == null || !swapleft.isred) && !swap.isred) {
-            doubleblack = true
         }
-
 
         let swapparentid = -1
         if (swapparent != undefined) {
@@ -495,10 +526,19 @@ export function deletenode(node_to_delete: number) {
             console.log(swapparent.id)
         }
 
+        console.log("before swap")
+        console.log($state.snapshot(allnodes))
+
+        //nodes are swapped here
         swapnodes(node, swap);
+
+
         console.log("nodes swapped");
         console.log($state.snapshot(allnodes))
+
+
         parent = getparent(node);
+
         if (parent != undefined) {
             if (parent.lchildid == node.id) {
                 parent.lchildid = null;
@@ -525,12 +565,17 @@ export function deletenode(node_to_delete: number) {
             }
         }
 
-        node = swapparent
-        while (doubleblack && swapleft && swapleft.parentid != null && node) {
+        console.log("node: " + node_to_delete + " deleted")
+
+        node = swapleft
+
+        while (doubleblack && node && swapleft) {
+            console.log("double black detected: " + node.id)
             //if the sibling is black and one of the sibling's children is red
             let sibling = null
             let siblingisleft = null
             let nodeparent = getparent(node)
+
             if (nodeparent && nodeparent.lchildid == swapleft.id) {
                 //the left child of the new node's parent is the new node
                 //so the sibling is the right child
@@ -564,6 +609,7 @@ export function deletenode(node_to_delete: number) {
 
             //if the sibling does not exist or it is black and its children are black (equivalent)
             if ((sibling == null) || (!siblingcolour && !siblingleftchildcolour && !siblingrightchildcolour)) {
+                console.log("sibling either does not exist or it is black and its children are also black")
                 if (sibling != null) {
                     sibling.isred = true
                     if (node.isred) {
@@ -580,6 +626,7 @@ export function deletenode(node_to_delete: number) {
             //if the sibling's LEFT child is red, and the sibling is the LEFT child
 
             if (sibling && !siblingcolour && siblingleftchild && siblingleftchildcolour && siblingisleft) {
+                console.log("sibling is left child, sibling's left child is red")
                 siblingleftchild.isred = false
                 rightrotation(sibling)
                 doubleblack = false
@@ -590,6 +637,8 @@ export function deletenode(node_to_delete: number) {
             //if the sibling is the RIGHT child and the sibling's LEFT child is red
 
             if (sibling && !siblingcolour && siblingleftchild && siblingleftchildcolour && !siblingisleft) {
+
+                console.log("sibling is right child, sibling's left child is red")
 
                 sibling.isred = true
                 siblingleftchild.isred = false
@@ -605,6 +654,9 @@ export function deletenode(node_to_delete: number) {
             //if the siblings RIGHT child is red, and the sibling is the RIGHT child
 
             if (sibling && !siblingcolour && siblingrightchild && siblingrightchildcolour && !siblingisleft) {
+
+                console.log("sibling is right child, sibling's right child is red")
+
                 siblingrightchild.isred = false
                 leftrotation(sibling)
                 doubleblack = false
@@ -616,6 +668,8 @@ export function deletenode(node_to_delete: number) {
 
             if (sibling && !siblingcolour && siblingrightchild && siblingrightchildcolour && siblingisleft) {
 
+                console.log("sibling is left child, sibling's right child is red")
+
                 sibling.isred = true
                 siblingrightchild.isred = false
                 leftrotation(siblingrightchild)
@@ -626,14 +680,19 @@ export function deletenode(node_to_delete: number) {
             }
 
             //if sibling is RED
-            if(sibling && siblingcolour){
-                if(nodeparent && siblingisleft){
+            if (sibling && siblingcolour) {
+                console.log("sibling is red")
+                if (nodeparent && siblingisleft) {
+                    console.log("sibling is left child")
                     sibling.isred = false
                     nodeparent.isred = true
                     rightrotation(sibling)
 
 
-                } else if(nodeparent && !siblingisleft){
+                } else if (nodeparent && !siblingisleft) {
+
+                    console.log("sibling is right child")
+
                     sibling.isred = false
                     nodeparent.isred = true
                     leftrotation(sibling)
