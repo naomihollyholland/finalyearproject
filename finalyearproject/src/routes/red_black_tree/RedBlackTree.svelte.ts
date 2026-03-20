@@ -332,6 +332,7 @@ export function swapnodes(node1: Node, node2: Node) {
     let templchild = node1.lchildid;
     let temprchild = node1.rchildid;
     let tempparentid = node1.parentid;
+    let tempcolour = node1.isred;
     let node1left = getleftchild(node1);
     let node1right = getrightchild(node1);
     let node1parent = getparent(node1);
@@ -365,12 +366,14 @@ export function swapnodes(node1: Node, node2: Node) {
     }
 
     node1.parentid = node2.parentid;
+    node1.isred = node2.isred
 
     node2.x = tempx;
     node2.y = tempy;
     node2.lchildid = templchild;
     node2.rchildid = temprchild;
     node2.parentid = tempparentid;
+    node2.isred = tempcolour;
 
     if (node2.lchildid == node2.id) {
         node2.lchildid = node2lchild;
@@ -482,43 +485,6 @@ export function deletenode(node_to_delete: number) {
         let swapparent = getparent(swap)
         let swapleft = getleftchild(swap)
 
-        //if swap exists and so does its child
-        //node is replacing swap, so we compare those colours
-        if (swap != null && node != null) {
-
-            //swapleft is black or a null node
-            if (swapleft == null || !swapleft.isred) {
-
-                if (node.isred) {
-                    // mark the replacing node as black
-                    if (swapleft != null) {
-                        swapleft.isred = false
-                    }
-                }
-
-                if (!node.isred) {
-                    //double black situation
-                    doubleblack = true
-                }
-
-            } else {
-                //swapleft must exist and be red
-
-                if (!node.isred) {
-                    swapleft.isred = false
-                }
-
-                if (node.isred) {
-                    //this should never happen, so im just gonna log something here
-                    console.log("double red situation, should be impossible")
-
-                }
-
-
-            }
-
-
-        }
 
         let swapparentid = -1
         if (swapparent != undefined) {
@@ -532,9 +498,55 @@ export function deletenode(node_to_delete: number) {
         //nodes are swapped here
         swapnodes(node, swap);
 
-
         console.log("nodes swapped");
         console.log($state.snapshot(allnodes))
+
+
+        // at this point, the nodes have been swapped, so swap is where node is, and node is where swap is. 
+
+        let potentialreplacement = null
+        potentialreplacement = getleftchild(node)
+
+        console.log(node.id)
+        if(potentialreplacement != null){
+            console.log(potentialreplacement.id)
+        } else {
+            console.log(null)
+        }
+
+        //swapleft is black or a null node
+        if (potentialreplacement == null || !potentialreplacement.isred) {
+
+            if (node.isred) {
+                console.log("one black, one red, so replacing node becomes black")
+                // mark the replacing node as black
+                if (potentialreplacement != null) {
+                    potentialreplacement.isred = false
+                }
+            }
+            if (!node.isred) {
+
+                console.log("node is black, and replacing node is black, double black")
+                //double black situation
+                doubleblack = true
+            }
+
+        } else {
+            //potentialreplacement must exist and be red
+
+            if (!node.isred) {
+                console.log("one black, one red, so replacing node becomes black")
+                potentialreplacement.isred = false
+            }
+
+            if (node.isred) {
+                //this should never happen, so im just gonna log something here
+                console.log("double red situation, should be impossible")
+
+            }
+        }
+
+
 
 
         parent = getparent(node);
@@ -575,6 +587,11 @@ export function deletenode(node_to_delete: number) {
             let sibling = null
             let siblingisleft = null
             let nodeparent = getparent(node)
+
+            if(nodeparent == null){
+                doubleblack = false
+                break;
+            }
 
             if (nodeparent && nodeparent.lchildid == swapleft.id) {
                 //the left child of the new node's parent is the new node
@@ -699,12 +716,17 @@ export function deletenode(node_to_delete: number) {
 
                 }
             }
+
+            
         }
 
 
 
+        let root = getroot()
 
-
+        if (root != null) {
+            root.isred = false
+        }
 
         recalculate_positions();
         console.log($state.snapshot(allnodes));
