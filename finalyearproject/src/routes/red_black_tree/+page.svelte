@@ -31,7 +31,7 @@
 
 <canvas id="canvas" height={size[1]} width={size[0]} {@attach makecanvas}>
 </canvas>
-<h1>AVL tree page!</h1>
+<h1>Red-Black tree page!</h1>
 <input bind:value={nodeinputvalue} placeholder="0" type="number" />
 <button onclick={() => push(nodeinputvalue)}>Add node</button>
 

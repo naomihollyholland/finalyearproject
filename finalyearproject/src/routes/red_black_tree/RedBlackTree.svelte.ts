@@ -747,8 +747,6 @@ export function deletenode(node_to_delete: number) {
             } else if (leftchild != undefined) {
                 leftchild.parentid = parent.id
                 parent.lchildid = leftchild.id
-            } else {
-                parent.rchildid = null
             }
         } else if (rightchild != undefined && parent == undefined) {
             rightchild.parentid = null;
@@ -845,60 +843,6 @@ export function rightrotation(toberight: Node) {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-// export function rightrotation(node: Node) {
-// 
-// let rightchild = getrightchild(node)
-// let parent = getparent(node)
-// 
-//get the parent's parent, set the child to be its new child
-// let grandparent = undefined
-// if (parent != undefined) {
-// grandparent = getparent(parent)
-// }
-// if (grandparent != undefined && parent != undefined) {
-// if (grandparent.lchildid == parent.id) {
-// grandparent.lchildid = node.id
-// node.parentid = grandparent.id
-// } else {
-// grandparent.rchildid = node.id
-// node.parentid = grandparent.id
-// }
-// }
-// if (grandparent == undefined) {
-// node.parentid = null
-// }
-//if the node has left children, they need to become the parents right children, so we should store them
-// let idofrightchild = null
-// if (rightchild != undefined) {
-// idofrightchild = rightchild.id
-// }
-// 
-// console.log("id of the node's right child: " + idofrightchild)
-//if the node had a parent, it needs to become the node's left child
-//if the node had a left child, it needs to become the right child of the parent
-// if (parent != undefined) {
-// node.rchildid = parent.id
-// parent.parentid = node.id
-// parent.lchildid = idofrightchild
-// if (rightchild != undefined) {
-// rightchild.parentid = parent.id
-// }
-// }
-// console.log("node's new children: " + node.lchildid + ", " + node.rchildid)
-// 
-// 
-// 
-// }
 
 export function placenode(node1: Node, node2: Node) {
     console.log($state.snapshot(allnodes));
