@@ -1,6 +1,6 @@
 <script lang="ts">
     import TreeNode from "../TreeNode.svelte";
-    import { deletenode, getNodes, push } from "./FibonacciHeap.svelte.ts";
+    import { deletemin, getNodes, push } from "./FibonacciHeap.svelte.ts";
     import { clearlines, drawlines, makecanvas } from "./canvas.ts";
 
     let size = $derived.by(() => {
@@ -35,8 +35,7 @@
 <button onclick={() => push(nodeinputvalue)}>Add node</button>
 
 <br />
-<input bind:value={node_to_delete} placeholder="0" type="number" />
-<button onclick={() => deletenode(node_to_delete)}>delete node</button>
+<button onclick={() => deletemin()}>delete node</button>
 
 {#each getNodes() as node (node.id)}
     <TreeNode id={node.id} value={node.val} x={node.x} y={node.y}/>

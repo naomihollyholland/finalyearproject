@@ -24,113 +24,90 @@ export function clearlines() {
 }
 
 export function drawlines() {
-    //console.log("canvas: " + canvas);
-    //console.log("ctx: " + ctx);
+    console.log("canvas: " + canvas);
+    console.log("ctx: " + ctx);
     if (ctx != undefined && canvas != undefined) {
         for (let node of treestruct.getNodes()) {
             ctx.beginPath();
             //for left child
             ctx.lineWidth = 10;
-            //let leftchild = treestruct.getleftchild(node);
-            //if (leftchild != undefined) {
-            //    ctx.moveTo(node.x + 50, node.y + 50);
-            //    ctx.lineTo(leftchild.x + 50, leftchild.y + 50);
-            //    ctx.stroke();
-            //}
 //
-            ////for right child
-            ////let rightchild = treestruct.getrightchild(node);
-            //if (rightchild != undefined) {
-            //    ctx.moveTo(node.x + 50, node.y + 50);
-            //    ctx.lineTo(rightchild.x + 50, rightchild.y + 50);
-            //    ctx.stroke();
-            //}
+          //  if (leftchild != undefined) {
+          //      ctx.moveTo(node.x + 50, node.y + 50);
+          //      ctx.lineTo(leftchild.x + 50, leftchild.y + 50);
+          //      ctx.stroke();
+          //  }
+//
+          //  //for right child
+          //  let rightchild = treestruct.getrightchild(node);
+          //  if (rightchild != undefined) {
+          //      ctx.moveTo(node.x + 50, node.y + 50);
+          //      ctx.lineTo(rightchild.x + 50, rightchild.y + 50);
+          //      ctx.stroke();
+          //  }
         }
     }
 }
 
-export function drawparenttoleftchild(node1: Node) {
-    if (ctx != undefined && canvas != undefined) {
-        ctx.beginPath();
+
+export function drawparenttochildren(node1: Node) {
+    if (ctx != undefined && canvas != undefined && node1.children != null) {
+        ctx.beginPath();        
         ctx.lineWidth = 10;
-        //let leftchild = treestruct.getleftchild(node1);
-        //if (leftchild != undefined) {
-        //    ctx.moveTo(node1.x + 50, node1.y + 50);
-        //    ctx.lineTo(leftchild.x + 50, leftchild.y + 50);
-        //    ctx.stroke();
+        let child = node1.children[0]
+        let childasnode = treestruct.getnode(child)
+        console.log("child")
+        console.log(childasnode)
+
+        
+
+        //console.log(node1.children)
+        //for (let child of node1.children) {
+        //    console.log(child)
+        //    childasnode = treestruct.getnode(child)
+        //    console.log(childasnode)
+        //    if (childasnode != undefined) {
+        //        let childx = childasnode.x + 50
+        //        let childy = childasnode.y + 50
+        //        let parentx = node1.x + 50
+        //        let parenty = node1.y + 50
+        //        ctx.moveTo(parentx, parenty);
+        //        ctx.lineTo(childx, childy);
+        //        ctx.stroke();
+//
+        //        console.log("drawn line to:" + childasnode.id)
+        //    }
         //}
     }
 }
 
-export function drawparenttorightchild(node1: Node) {
-    if (ctx != undefined && canvas != undefined) {
-        ctx.beginPath();
-        ctx.lineWidth = 10;
-        //let rightchild = treestruct.getrightchild(node1);
-        //if (rightchild != undefined) {
-        //    ctx.moveTo(node1.x + 50, node1.y + 50);
-        //    ctx.lineTo(rightchild.x + 50, rightchild.y + 50);
-        //    ctx.stroke();
-        //}
-    }
-}
 
-export function clearleftchildline(node1: Node) {
-    if (ctx != undefined) {
-        //let leftchild = treestruct.getleftchild(node1);
-        let leftpos = node1.x + 21;
-        let rightpos = node1.x + 21;
-        let height = 0;
-        //if (leftchild != null) {
-        //    leftpos = leftchild.x + 21;
-        //    height = leftchild.y - node1.y;
-        //    height += 25;
-        //    rightpos += 30;
-        //}
+export function clearchildlines(node1: Node) {
+    if (ctx != undefined && node1.children != undefined) {
+        let leftpos = node1.x;
+        let rightpos = node1.x;
+        let height = 25
+        for (let child of node1.children) {
+            let childasnode = treestruct.getnode(child)
+            if (childasnode != undefined) {
+                if (childasnode.x < leftpos) {
+                    leftpos = childasnode.x
+                }
+                if (childasnode.x > rightpos) {
+                    rightpos = childasnode.x
+                }
+            }
+        }
+        leftpos += 21
+        rightpos += 21
         let fin = rightpos - leftpos;
         if (rightpos - leftpos < 0) {
             fin = node1.width;
         }
-    //    console.log(
-    //         "clearing rectangle of: " +
-    //         fin +
-    //         ", " +
-    //         height +
-    //         " starting at: " +
-    //         leftpos +
-    //         ", " +
-    //         node1.y,
-    //     );
         ctx.clearRect(leftpos, node1.y, fin, height);
+        console.log("cleared lines")
     }
+
 }
 
-export function clearrightchildline(node1: Node) {
-    if (ctx != undefined) {
-        //let rightchild = treestruct.getrightchild(node1);
-        let leftpos = node1.x + 21;
-        let height = node1.y + 10;
-        let rightpos = 0;
-        //if (rightchild != null) {
-        //    rightpos = rightchild.x + 21;
-        //    height = rightchild.y - node1.y;
-        //    height += 25;
-        //    rightpos += 30;
-        //}
-        let fin = rightpos - leftpos;
-        if (rightpos - leftpos < 0) {
-            fin = node1.width;
-        }
-        // console.log(
-        //     "clearing rectangle of: " +
-        //     fin +
-        //     ", " +
-        //     height +
-        //     "starting at: " +
-        //     leftpos +
-        //     ", " +
-        //     node1.y,
-        // );
-        ctx.clearRect(leftpos, node1.y, fin, height);
-    }
-}
+
