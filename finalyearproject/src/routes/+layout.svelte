@@ -14,6 +14,7 @@
 	<a href="/binary_heap">Binary heap</a>
 	<a href="/avl_tree">AVL tree</a>
 	<a href="/red_black_tree">Red-Black tree</a>
+	<a href="/fibonacci_heap">Fibonacci Heap</a>
 </nav>
 
 

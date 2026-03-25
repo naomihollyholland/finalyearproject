@@ -1,6 +1,6 @@
 <script lang="ts">
-    import RedBlackNode from "./RedBlackNode.svelte";
-    import { deletenode, getNodes, push } from "./RedBlackTree.svelte.ts";
+    import TreeNode from "../TreeNode.svelte";
+    import { deletenode, getNodes, push } from "./FibonacciHeap.svelte.ts";
     import { clearlines, drawlines, makecanvas } from "./canvas.ts";
 
     let size = $derived.by(() => {
@@ -30,7 +30,7 @@
 
 <canvas id="canvas" height={size[1]} width={size[0]} {@attach makecanvas}>
 </canvas>
-<h1>Red-Black tree page!</h1>
+<h1>Fibonacci heap page!</h1>
 <input bind:value={nodeinputvalue} placeholder="0" type="number" />
 <button onclick={() => push(nodeinputvalue)}>Add node</button>
 
@@ -39,7 +39,7 @@
 <button onclick={() => deletenode(node_to_delete)}>delete node</button>
 
 {#each getNodes() as node (node.id)}
-    <RedBlackNode id={node.id} value={node.val} x={node.x} y={node.y} isred = {node.isred} />
+    <TreeNode id={node.id} value={node.val} x={node.x} y={node.y}/>
 {/each}
 
 <style>

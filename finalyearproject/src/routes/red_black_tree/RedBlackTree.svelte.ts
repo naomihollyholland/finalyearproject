@@ -1,7 +1,5 @@
 
-import type { Attachment } from "svelte/attachments";
 import * as canvas from "./canvas.ts";
-import { get } from "svelte/store";
 
 
 export interface Node {
@@ -508,7 +506,7 @@ export function deletenode(node_to_delete: number) {
         potentialreplacement = getleftchild(node)
 
         console.log(node.id)
-        if(potentialreplacement != null){
+        if (potentialreplacement != null) {
             console.log(potentialreplacement.id)
         } else {
             console.log(null)
@@ -546,11 +544,7 @@ export function deletenode(node_to_delete: number) {
             }
         }
 
-
-
-
         parent = getparent(node);
-
         if (parent != undefined) {
             if (parent.lchildid == node.id) {
                 parent.lchildid = null;
@@ -558,6 +552,7 @@ export function deletenode(node_to_delete: number) {
                 parent.rchildid = null;
             }
         }
+
         console.log("found node to be swapped");
         $state.snapshot(node.id)
         $state.snapshot(swap.id)
@@ -588,7 +583,7 @@ export function deletenode(node_to_delete: number) {
             let siblingisleft = null
             let nodeparent = getparent(node)
 
-            if(nodeparent == null){
+            if (nodeparent == null) {
                 doubleblack = false
                 break;
             }
@@ -717,7 +712,7 @@ export function deletenode(node_to_delete: number) {
                 }
             }
 
-            
+
         }
 
 
