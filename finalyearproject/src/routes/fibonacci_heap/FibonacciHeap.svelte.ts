@@ -18,7 +18,7 @@ export interface Node {
 
 export interface rootitem {
     id: number;
-    ismin: Boolean; 
+    ismin: Boolean;
 }
 
 let i = $state([500, 150]);
@@ -39,8 +39,8 @@ let allnodes: Node[] = $state([
 
 let rootnodes: rootitem[] = $state([
     {
-        id:0,
-        ismin:true
+        id: 0,
+        ismin: true
     }
 ])
 
@@ -48,27 +48,26 @@ export const getNodes = () => allnodes;
 
 export function recalculate_positions() {
 
-    console.log($state.snapshot(allnodes))
     let firstnode = getnode(rootnodes[0].id)
     let basepos = i[0]
-    if(firstnode != undefined){
+    if (firstnode != undefined) {
         firstnode.x = basepos
     }
 
     //get the degree of everything, make sure its updated
-    for(let item of allnodes){
-        if(item != undefined && item.children != undefined){
+    for (let item of allnodes) {
+        if (item != undefined && item.children != undefined) {
             item.degree = item.children.length
-        } else{
+        } else {
             item.degree = 0
         }
     }
 
     //for each element in rootnodes
-    for(let node of rootnodes){
+    for (let node of rootnodes) {
         //get the root node as an actual node
         let rootasnode = getnode(node.id)
-        if(rootasnode != undefined){
+        if (rootasnode != undefined) {
             rootasnode.x = basepos
             rootasnode.y = i[1]
             calculate_widths(rootasnode)
@@ -76,34 +75,33 @@ export function recalculate_positions() {
             basepos += rootasnode.width
         }
 
-        //
+
     }
-    console.log($state.snapshot(allnodes));
 }
 
 
 //given the root first, then everything else after, if it changes
 export function reevaluate_coordinates_of_children(node: Node) {
-    
+
     let basepos = node.x
 
-    if(node.children != null){
-        
-        for(let child of node.children){
+    if (node.children != null) {
+
+        for (let child of node.children) {
             let childasnode = getnode(child)
-            if(childasnode != undefined){
+            if (childasnode != undefined) {
                 childasnode.y = node.y + 125
                 //if the child has moved
-                if(childasnode.x != basepos){
+                if (childasnode.x != basepos) {
                     childasnode.x = basepos
-                    canvas.clearchildlines(node)
+                    //canvas.clearchildlines(node)
                     reevaluate_coordinates_of_children(childasnode)
                 }
-                //childasnode.x = basepos
+
                 basepos += childasnode.width
             }
         }
-        canvas.drawparenttochildren(node)
+        canvas.drawlines()
     }
 
 }
@@ -114,10 +112,10 @@ export function calculate_widths(node: Node) {
 
     let totalwidth = 0;
     let childasnode;
-    if(node.children != null){
-        for(let child of node.children){
+    if (node.children != null) {
+        for (let child of node.children) {
             childasnode = getnode(child)
-            if(childasnode != undefined){
+            if (childasnode != undefined) {
                 totalwidth += calculate_widths(childasnode)
             }
         }
@@ -131,25 +129,28 @@ export function calculate_widths(node: Node) {
 
 }
 
-export function deletemin(){
+export function deletemin() {
     let min;
-    for(let item of rootnodes){
-        if(item.ismin){
+    let index = 0
+    let allnodesid = -1
+    for (let item of rootnodes) {
+        if (item.ismin) {
             min = item
+            allnodesid = item.id
             break
         }
+        index += 1
     }
     let array = Array(rootnodes.length)
 
-    console.log($state.snapshot(rootnodes))
     console.log("minimum's children adding to the root list")
     //add the minimum's children to the root list
-    if(min != undefined){
+    if (min != undefined) {
         let minasnode = getnode(min.id)
-        if(minasnode != undefined && minasnode.children != undefined){
-            for(let children of minasnode.children){
+        if (minasnode != undefined && minasnode.children != undefined) {
+            for (let children of minasnode.children) {
                 let newitem = {
-                    id: children, 
+                    id: children,
                     ismin: false
                 }
                 rootnodes.push(newitem);
@@ -157,35 +158,34 @@ export function deletemin(){
         }
     }
 
-    console.log($state.snapshot(rootnodes))
+    rootnodes.splice(index, 1)
+    let allnodesindex = allnodes.findIndex((node) => node.id === allnodesid);
+    if(allnodesindex != -1){
+        allnodes.splice(allnodesindex, 1)
+    }
     console.log("done")
 
     //make an array with a size equal to the rootnodes size
-    for(let item of rootnodes){
+    for (let item of rootnodes) {
         let itemasnode = getnode(item.id)
-        if(itemasnode){
-            console.log(itemasnode.degree)
-            while(array[itemasnode.degree] != undefined){
-                console.log("doing union")
-                //do a union of the item in there, and the item to be put in there
+        if (itemasnode != undefined) {
+            console.log("checking:" + itemasnode.id)
+            while (array[itemasnode.degree] != undefined) {
+                console.log("checking for union")
 
-
-                 let storednode = getnode(array[itemasnode.degree])
-                 if(storednode != undefined){
-                    if(itemasnode.val > storednode.val){
-                        console.log(storednode.degree)
+                let storednode = getnode(array[itemasnode.degree])
+                if (storednode != undefined) {
+                    console.log("union of: " + itemasnode.id + " and " + storednode.id)
+                    if (itemasnode.val > storednode.val) {
                         array[itemasnode.degree] = undefined
                         union(storednode, itemasnode)
                         itemasnode = storednode
-                        console.log(itemasnode.degree)
                     } else {
-                        console.log(itemasnode.degree)
                         array[itemasnode.degree] = undefined
                         union(itemasnode, storednode)
-                        console.log(itemasnode.degree)
-                        }
+                    }
 
-                 }
+                }
 
             }
             array[itemasnode.degree] = itemasnode.id
@@ -195,22 +195,22 @@ export function deletemin(){
     let val = null
     let min_id = null
 
-    for(let item of rootnodes){
+    for (let item of rootnodes) {
         let itemasnode = getnode(item.id)
-        if(itemasnode != undefined){
-            if(val == null){
+        if (itemasnode != undefined) {
+            if (val == null) {
                 min_id = itemasnode.id
                 val = itemasnode.val
-            } else if(itemasnode.val < val){
-                    min_id = itemasnode.id
-                    val = itemasnode.val
+            } else if (itemasnode.val < val) {
+                min_id = itemasnode.id
+                val = itemasnode.val
             }
-            
+
         }
     }
 
-    for(let item of rootnodes){
-        if(item.id == min_id){
+    for (let item of rootnodes) {
+        if (item.id == min_id) {
             item.ismin = true
         } else {
             item.ismin = false
@@ -218,6 +218,10 @@ export function deletemin(){
     }
 
     recalculate_positions()
+}
+
+export function getroots(){
+    return rootnodes;
 }
 
 export function getnode(nodeid: Number) {
@@ -243,32 +247,34 @@ export function getparent(node1: Node) {
 
 
 //takes two nodes, changes base's children to include the item toappend
-export function union(base: Node, toappend: Node){
+export function union(base: Node, toappend: Node) {
+    console.log("union of: " + base.id + " and " + toappend.id)
     base.degree += 1;
-    if(base.children != null){
+    if (base.children != null) {
         base.children.push(toappend.id)
     } else {
         base.children = [toappend.id]
     }
     console.log("children of " + base.id + " are: " + base.children)
-    
+
 
     let parent = getparent(toappend)
 
-    if(parent != null){
-        if(parent.children != undefined){
+    if (parent != null) {
+        if (parent.children != undefined) {
             let id = parent.children.findIndex((child) => child === toappend.id)
             parent.children.splice(id, 1)
         }
     } else {
-            let id = rootnodes.findIndex((child) => child.id === toappend.id)
-            rootnodes.splice(id, 1)
+        let id = rootnodes.findIndex((child) => child.id === toappend.id)
+        rootnodes.splice(id, 1)
     }
     toappend.parentid = base.id
 
     reevaluate_coordinates_of_children(base)
     canvas.clearchildlines(base)
-    canvas.drawparenttochildren(base)
+    canvas.drawlines()
+    console.log($state.snapshot(allnodes))
 }
 
 export function placenode(node1: Node, node2: Node) {
@@ -303,22 +309,22 @@ export function push(nodeinputvalue: number) {
     if (allnodes.length < 1) {
         allnodes.push(node);
         let newitem = {
-            id: id, 
+            id: id,
             ismin: true
         }
         rootnodes.push(newitem);
     } else {
         allnodes.push(node);
         let newitem = {
-            id: id, 
+            id: id,
             ismin: false
         }
-        for(let rootnode of rootnodes){
+        for (let rootnode of rootnodes) {
             let nodeid = rootnode.id
             let nodemin = rootnode.ismin
-            let item = getnode(nodeid) 
-            if(nodemin && item){
-                if(node.val < item.val){
+            let item = getnode(nodeid)
+            if (nodemin && item) {
+                if (node.val < item.val) {
                     newitem.ismin = true
                     rootnode.ismin = false
                 }

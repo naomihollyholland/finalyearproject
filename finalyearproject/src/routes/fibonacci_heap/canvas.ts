@@ -24,62 +24,55 @@ export function clearlines() {
 }
 
 export function drawlines() {
-    console.log("canvas: " + canvas);
-    console.log("ctx: " + ctx);
+
+        if (ctx != undefined && canvas != undefined) {
+            ctx.beginPath()
+            let tempstore;
+            let thisroot;
+            for (let rootnode of treestruct.getroots()) {
+                thisroot = treestruct.getnode(rootnode.id)
+                if(tempstore != null && thisroot != null){
+                    let leftx = tempstore.x + 50
+                    let lefty = tempstore.y + 50
+                    let rightx = thisroot.x + 50
+                    let righty = thisroot.y + 50
+                    ctx.beginPath()
+                    ctx.moveTo(leftx, lefty);
+                    ctx.lineTo(rightx, righty);
+                    ctx.stroke();
+                }
+                tempstore = thisroot
+            }
+        }
+    
     if (ctx != undefined && canvas != undefined) {
         for (let node of treestruct.getNodes()) {
             ctx.beginPath();
-            //for left child
             ctx.lineWidth = 10;
-//
-          //  if (leftchild != undefined) {
-          //      ctx.moveTo(node.x + 50, node.y + 50);
-          //      ctx.lineTo(leftchild.x + 50, leftchild.y + 50);
-          //      ctx.stroke();
-          //  }
-//
-          //  //for right child
-          //  let rightchild = treestruct.getrightchild(node);
-          //  if (rightchild != undefined) {
-          //      ctx.moveTo(node.x + 50, node.y + 50);
-          //      ctx.lineTo(rightchild.x + 50, rightchild.y + 50);
-          //      ctx.stroke();
-          //  }
+            if (ctx != undefined && canvas != undefined && node.children != null) {
+                ctx.beginPath();
+                ctx.lineWidth = 10;
+                let child = node.children[0]
+                let childasnode = treestruct.getnode(child)
+
+                for (let child of node.children) {
+                    childasnode = treestruct.getnode(child)
+                    if (childasnode != undefined) {
+                        let childx = childasnode.x + 50
+                        let childy = childasnode.y + 50
+                        let parentx = node.x + 50
+                        let parenty = node.y + 50
+                        ctx.moveTo(parentx, parenty);
+                        ctx.lineTo(childx, childy);
+                        ctx.stroke();
+                    }
+                }
+            }
         }
     }
 }
 
 
-export function drawparenttochildren(node1: Node) {
-    if (ctx != undefined && canvas != undefined && node1.children != null) {
-        ctx.beginPath();        
-        ctx.lineWidth = 10;
-        let child = node1.children[0]
-        let childasnode = treestruct.getnode(child)
-        console.log("child")
-        console.log(childasnode)
-
-        
-
-        //console.log(node1.children)
-        //for (let child of node1.children) {
-        //    console.log(child)
-        //    childasnode = treestruct.getnode(child)
-        //    console.log(childasnode)
-        //    if (childasnode != undefined) {
-        //        let childx = childasnode.x + 50
-        //        let childy = childasnode.y + 50
-        //        let parentx = node1.x + 50
-        //        let parenty = node1.y + 50
-        //        ctx.moveTo(parentx, parenty);
-        //        ctx.lineTo(childx, childy);
-        //        ctx.stroke();
-//
-        //        console.log("drawn line to:" + childasnode.id)
-        //    }
-        //}
-    }
-}
 
 
 export function clearchildlines(node1: Node) {
