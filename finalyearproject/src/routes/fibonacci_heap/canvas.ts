@@ -27,6 +27,7 @@ export function drawlines() {
 
         if (ctx != undefined && canvas != undefined) {
             ctx.beginPath()
+            ctx.lineWidth = 10;
             let tempstore;
             let thisroot;
             for (let rootnode of treestruct.getroots()) {

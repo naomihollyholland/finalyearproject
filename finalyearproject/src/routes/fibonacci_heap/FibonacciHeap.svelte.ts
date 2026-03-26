@@ -48,7 +48,12 @@ export const getNodes = () => allnodes;
 
 export function recalculate_positions() {
 
-    let firstnode = getnode(rootnodes[0].id)
+    let firstnode
+    if(rootnodes[0] != undefined){
+        firstnode = getnode(rootnodes[0].id)
+    } else {
+        return;
+    }
     let basepos = i[0]
     if (firstnode != undefined) {
         firstnode.x = basepos
@@ -141,7 +146,6 @@ export function deletemin() {
         }
         index += 1
     }
-    let array = Array(rootnodes.length)
 
     console.log("minimum's children adding to the root list")
     //add the minimum's children to the root list
@@ -160,37 +164,104 @@ export function deletemin() {
 
     rootnodes.splice(index, 1)
     let allnodesindex = allnodes.findIndex((node) => node.id === allnodesid);
-    if(allnodesindex != -1){
+    if (allnodesindex != -1) {
         allnodes.splice(allnodesindex, 1)
     }
     console.log("done")
 
     //make an array with a size equal to the rootnodes size
-    for (let item of rootnodes) {
-        let itemasnode = getnode(item.id)
-        if (itemasnode != undefined) {
-            console.log("checking:" + itemasnode.id)
-            while (array[itemasnode.degree] != undefined) {
-                console.log("checking for union")
+
+    let array = Array(rootnodes.length).fill(null)
+    console.log($state.snapshot(rootnodes))
+
+    let rootnodeslength = $state.snapshot(rootnodes.length)
+    for (let j = 0; j != rootnodeslength; j += 1) {
+        let rootid = rootnodes[j].id
+        let itemasnode = getnode(rootid)
+
+        if (itemasnode != null) {
+            console.log("checking node: " + $state.snapshot(itemasnode.id))
+
+            if (array[itemasnode.degree] == null) {
+                array[itemasnode.degree] = itemasnode.id
+            } else {
 
                 let storednode = getnode(array[itemasnode.degree])
-                if (storednode != undefined) {
-                    console.log("union of: " + itemasnode.id + " and " + storednode.id)
-                    if (itemasnode.val > storednode.val) {
-                        array[itemasnode.degree] = undefined
-                        union(storednode, itemasnode)
-                        itemasnode = storednode
+                let check = true
+                while (storednode != null && check) {
+                    storednode = getnode(array[itemasnode.degree])
+                    
+                    //if there is a conflict with the space the new node will have to fit
+                    if(array[itemasnode.degree + 1] != null && storednode != undefined){
+                        array[itemasnode.degree] = null
+                        if(storednode.val > itemasnode.val){
+                            union(itemasnode, storednode)
+                        } else {
+                            union(storednode, itemasnode)
+                            itemasnode = storednode
+                        }
+                        //rootnodes has gotten smaller, and j needs to check this index again, since it has been squashed
+                        
+                        rootnodeslength -= 1
+                        j -= 1
+                        console.log("moving up the chain")
+                    } else if(storednode != undefined){
+                        array[itemasnode.degree] = null
+                        if(storednode.val > itemasnode.val){
+                            union(itemasnode, storednode)
+                        } else {
+                            union(storednode, itemasnode)
+                            itemasnode = storednode
+                        }
+                        array[itemasnode.degree] = itemasnode.id
+                        check = false
+                        rootnodeslength -= 1
+                        j -= 1
+
+
+
                     } else {
-                        array[itemasnode.degree] = undefined
-                        union(itemasnode, storednode)
+                        console.log("storednode is not real")
+                        check = false
                     }
+
 
                 }
 
+
             }
-            array[itemasnode.degree] = itemasnode.id
+
+
         }
+        console.log(array)
     }
+
+    // if (itemasnode != null) {
+    // console.log("checking:" + itemasnode.id)
+    // if (array[itemasnode.degree] != null) {
+    // console.log("checking for conflict")
+    // 
+    // let storednode = getnode(array[itemasnode.degree])
+    // if (storednode != null) {
+    // console.log("conflict of: " + itemasnode.id + " and " + storednode.id)
+    // if (itemasnode.val > storednode.val) {
+    // array[itemasnode.degree] = null
+    // union(storednode, itemasnode)
+    // array[itemasnode.degree] = itemasnode.id
+    // 
+    // } else {
+    // array[itemasnode.degree] = null
+    // union(itemasnode, storednode)
+    // array[itemasnode.degree] = itemasnode.id
+    // }
+    // console.log(array)
+    // }
+    // 
+    // }
+    // array[itemasnode.degree] = itemasnode.id
+    // }
+    // console.log(array)
+    // }
 
     let val = null
     let min_id = null
@@ -220,7 +291,7 @@ export function deletemin() {
     recalculate_positions()
 }
 
-export function getroots(){
+export function getroots() {
     return rootnodes;
 }
 
