@@ -15,6 +15,8 @@ export interface Node {
 }
 let i = $state([500, 150]);
 
+let button = $state(false)
+
 let allnodes: Node[] = $state([
     {
         id: 0,
@@ -54,17 +56,17 @@ export function recalculate_positions() {
                     if ((node.x != parentnode.x - (parentnode.width / 3.5))) {
                         canvas.clearleftchildline(parentnode);
                         node.x = parentnode.x - (parentnode.width / 3.5);
-                        setTimeout( () => {
+                        setTimeout(() => {
                             canvas.drawparenttoleftchild(parentnode);
                         }, 1000);
 
                         canvas.clearleftchildline(node);
-                        setTimeout( () => {
+                        setTimeout(() => {
                             canvas.drawparenttoleftchild(node);
                         }, 1000);
 
                         canvas.clearrightchildline(node);
-                        setTimeout( () => {
+                        setTimeout(() => {
                             canvas.drawparenttorightchild(node);
                         }, 1000);
 
@@ -99,17 +101,17 @@ export function recalculate_positions() {
                 }
             }
         }
-    checklefftoverrun()
+        checklefftoverrun()
     }
     console.log($state.snapshot(allnodes));
 }
 
-export function checklefftoverrun(){
+export function checklefftoverrun() {
     let max = 0
-    for(let node of allnodes){
-        if((node.x) <  300){
+    for (let node of allnodes) {
+        if ((node.x) < 300) {
             let newval = Math.abs(node.x - 300)
-            if(newval > max){
+            if (newval > max) {
                 max = newval
             }
         }
@@ -316,8 +318,9 @@ export function inordersuccessor(node1: Node) {
     return undefined;
 }
 
-export function deletenode(node_to_delete : number) {
+export function deletenode(node_to_delete: number) {
 
+    button = true
     console.log("node being deleted");
     let node = allnodes.find((node) => node.id === node_to_delete);
     if (node == undefined) {
@@ -356,7 +359,7 @@ export function deletenode(node_to_delete : number) {
 
         allnodes.splice(index, 1);
 
-        
+
         swapparent = getnode(swapparentid)
         if (swapleft != undefined) {
             console.log(swapleft)
@@ -370,6 +373,7 @@ export function deletenode(node_to_delete : number) {
 
         recalculate_positions();
         console.log($state.snapshot(allnodes));
+        wait(3).then(() => button = false);
         return;
     }
 
@@ -384,10 +388,10 @@ export function deletenode(node_to_delete : number) {
                 rightchild.parentid = parent.id
                 parent.rchildid = rightchild.id
 
-            } else if(leftchild != undefined) {
+            } else if (leftchild != undefined) {
                 leftchild.parentid = parent.id
                 parent.lchildid = leftchild.id
-            } else{
+            } else {
                 parent.rchildid = null
             }
         } else if (rightchild != undefined && parent == undefined) {
@@ -406,87 +410,12 @@ export function deletenode(node_to_delete : number) {
 }
 
 
-// export function deletenode() {
-// console.log("node being deleted: " + node_to_delete);
-// 
-// let node = allnodes.find((node) => node.id === node_to_delete);
-// 
-// if (node == null) {
-// recalculate_positions();
-// return;
-// }
-// 
-// let swap = getswapcandidate(node);
-// let parent = getparent(node);
-// 
-//      if there is an in order successor
-// if (swap != null) {
-// let swapleft = getleftchild(swap)
-// let swapright = getrightchild(swap)
-// let swapparent = getparent(swap)
-// let swapparentid = 0
-// 
-// if(swapparent != undefined){
-// swapparentid = swapparent.id
-// }
-// 
-// swapnodes(node, swap);
-// console.log($state.snapshot(allnodes));
-// parent = getparent(node);
-// console.log("hi");
-// if (parent != undefined) {
-// if (parent.lchildid == node.id) {
-// parent.lchildid = null;
-// } else {
-// parent.rchildid = null;
-// }
-// }
-// swapparent = getnode(swapparentid)
-// if (swapleft != undefined) {
-// if (swapparent != undefined) {
-// swapparent.rchildid = swapleft.id;
-// swapleft.parentid = swapparent.id;
-// console.log("added the in order predecessor's child into the right spot")
-// }
-// }
-// 
-// 
-// console.log("found node to be swapped");
-// let index = allnodes.findIndex(
-// (node) => node.id === node_to_delete,
-// );
-// allnodes.splice(index, 1);
-// 
-// 
-// console.log($state.snapshot(allnodes));
-// recalculate_positions();
-// return;
-// }
+async function wait(x: number) {
+    return new Promise(resolve => setTimeout(resolve, x * 1000));
+}
 
-// if (swap == null) {
-// console.log("no in order successor");
-// let rightchild = getrightchild(node);
-// parent = getparent(node);
-// if (parent != undefined) {
-// if (rightchild != undefined) {
-// rightchild.parentid = parent.id;
-// parent.rchildid = rightchild.id;
-// } else {
-// parent.rchildid = null;
-// }
-// } else if (rightchild != undefined && parent == undefined) {
-// rightchild.parentid = null;
-// }
-// let index = allnodes.findIndex(
-// (node) => node.id === node_to_delete,
-// );
 
-// allnodes.splice(index, 1);
-// console.log($state.snapshot(allnodes));
-// recalculate_positions();
-// return;
-// }
-// }
+
 
 export function placenode(node1: Node, node2: Node) {
     console.log($state.snapshot(allnodes));
@@ -532,8 +461,11 @@ export function placenode(node1: Node, node2: Node) {
     }
 }
 
-export function push(nodeinputvalue : number) {
-    if(!Number.isInteger(nodeinputvalue)){
+export const getbutton = () => button;
+
+export function push(nodeinputvalue: number) {
+    button = true
+    if (!Number.isInteger(nodeinputvalue)) {
         return;
     }
     let i = 0;
@@ -559,4 +491,5 @@ export function push(nodeinputvalue : number) {
     }
     console.log($state.snapshot(allnodes));
     recalculate_positions();
+    wait(3).then(() => button = false);
 }
