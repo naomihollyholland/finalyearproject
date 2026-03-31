@@ -82,8 +82,22 @@ export function recalculate_positions() {
 
 
     }
+
+    checklefftoverrun()
 }
 
+export function checklefftoverrun(){
+    let max = 0
+    for(let node of allnodes){
+        if((node.x) <  300){
+            let newval = Math.abs(node.x - 300)
+            if(newval > max){
+                max = newval
+            }
+        }
+    }
+    i[0] = i[0] + max
+}
 
 //given the root first, then everything else after, if it changes
 export function reevaluate_coordinates_of_children(node: Node) {

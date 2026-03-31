@@ -50,6 +50,7 @@ export function recalculate_positions() {
         reevaluate_coordinate(root)
     }
 
+    checklefftoverrun()
     //console.log($state.snapshot(allnodes));
 }
 
@@ -120,6 +121,19 @@ export function reevaluate_coordinate(node: Node) {
     }
 }
 
+
+export function checklefftoverrun(){
+    let max = 0
+    for(let node of allnodes){
+        if((node.x) <  300){
+            let newval = Math.abs(node.x - 300)
+            if(newval > max){
+                max = newval
+            }
+        }
+    }
+    i[0] = i[0] + max
+}
 
 export function comparecolours(node: Node) {
     let root = getroot()
