@@ -14,7 +14,7 @@ export interface Node {
     width: number;
 }
 let i = $state([500, 150]);
-
+let button = $state(false)
 let allnodes: Node[] = $state([
     {
         id: 0,
@@ -29,6 +29,7 @@ let allnodes: Node[] = $state([
 ]);
 
 export const getNodes = () => allnodes;
+export const getbutton = () => button;
 
 export function recalculate_positions() {
     let root = getroot();
@@ -375,15 +376,21 @@ export function swapnodes(node1: Node, node2: Node) {
 
 }
 
+async function wait(x: number) {
+    return new Promise(resolve => setTimeout(resolve, x * 1000));
+}
 
 export function deleteMin(){
+    button = true
     swapnodes(allnodes[0], allnodes[allnodes.length - 1])
     allnodes.splice(allnodes.length-1, 1)
     heapify()
     recalculate_positions()
+    wait(3).then(() => button = false);
 }
 
 export function push(nodeinputvalue : number) {
+    button = true
     if(!Number.isInteger(nodeinputvalue)){
         return;
     }
@@ -408,9 +415,6 @@ export function push(nodeinputvalue : number) {
     let nodepos = allnodes.findIndex((node) => node.id === i)
     console.log("node position:" +  nodepos)
 
-
-
-    //this is fucking stupid
     let parentpos = (nodepos-1) / 2
     let leftchild = true
     if(!Number.isInteger(parentpos)){
@@ -440,4 +444,5 @@ export function push(nodeinputvalue : number) {
 
     console.log("finished heapifying")
     console.log($state.snapshot(allnodes));
+    wait(3).then(() => button = false);
 }

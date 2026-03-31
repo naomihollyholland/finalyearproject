@@ -1,6 +1,6 @@
 <script lang="ts">
     import RedBlackNode from "./RedBlackNode.svelte";
-    import { deletenode, getNodes, push } from "./RedBlackTree.svelte.ts";
+    import { deletenode, getNodes, push, getbutton} from "./RedBlackTree.svelte.ts";
     import { clearlines, drawlines, makecanvas } from "./canvas.ts";
 
     let size = $derived.by(() => {
@@ -32,11 +32,11 @@
 </canvas>
 <h1>Red-Black tree page!</h1>
 <input bind:value={nodeinputvalue} placeholder="0" type="number" />
-<button onclick={() => push(nodeinputvalue)}>Add node</button>
+<button onclick={() => push(nodeinputvalue)} disabled={getbutton()}>Add node</button>
 
 <br />
 <input bind:value={node_to_delete} placeholder="0" type="number" />
-<button onclick={() => deletenode(node_to_delete)}>delete node</button>
+<button onclick={() => deletenode(node_to_delete)} disabled={getbutton()}>delete node</button>
 
 {#each getNodes() as node (node.id)}
     <RedBlackNode id={node.id} value={node.val} x={node.x} y={node.y} isred = {node.isred} />

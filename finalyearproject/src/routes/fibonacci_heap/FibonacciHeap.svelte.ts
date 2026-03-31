@@ -22,6 +22,7 @@ export interface rootitem {
 }
 
 let i = $state([500, 150]);
+let button = $state(false)
 
 let allnodes: Node[] = $state([
     {
@@ -45,6 +46,8 @@ let rootnodes: rootitem[] = $state([
 ])
 
 export const getNodes = () => allnodes;
+
+export const getbutton = () => button;
 
 export function recalculate_positions() {
 
@@ -149,6 +152,7 @@ export function calculate_widths(node: Node) {
 }
 
 export function deletemin() {
+    button = true
     let min;
     let index = 0
     let allnodesid = -1
@@ -303,10 +307,15 @@ export function deletemin() {
     }
 
     recalculate_positions()
+    wait(3).then(() => button = false);
 }
 
 export function getroots() {
     return rootnodes;
+}
+
+async function wait(x: number) {
+    return new Promise(resolve => setTimeout(resolve, x * 1000));
 }
 
 export function getnode(nodeid: Number) {
@@ -372,6 +381,7 @@ export function placenode(node1: Node, node2: Node) {
 }
 
 export function push(nodeinputvalue: number) {
+    button = true
     if (!Number.isInteger(nodeinputvalue)) {
         return;
     }
@@ -422,4 +432,5 @@ export function push(nodeinputvalue: number) {
     console.log("node id: " + node.id + " pushed")
     console.log($state.snapshot(allnodes));
     recalculate_positions();
+    wait(3).then(() => button = false);
 }

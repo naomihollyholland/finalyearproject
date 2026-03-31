@@ -1,6 +1,6 @@
 <script lang="ts">
     import TreeNode from "../TreeNode.svelte";
-    import { deletenode, getNodes, push } from "./AVLTree.svelte.ts";
+    import { deletenode, getNodes, push, getbutton, getlog} from "./AVLTree.svelte.ts";
     import { clearlines, drawlines, makecanvas } from "./canvas.ts";
 
     let size = $derived.by(() => {
@@ -32,16 +32,19 @@
 </canvas>
 <h1>AVL tree page!</h1>
 <input bind:value={nodeinputvalue} placeholder="0" type="number" />
-<button onclick={() => push(nodeinputvalue)}>Add node</button>
+<button onclick={() => push(nodeinputvalue)} disabled={getbutton()}>Add node</button>
 
 <br />
 <input bind:value={node_to_delete} placeholder="0" type="number" />
-<button onclick={() => deletenode(node_to_delete)}>delete node</button>
+<button onclick={() => deletenode(node_to_delete)} disabled={getbutton()}>delete node</button>
 
 {#each getNodes() as node (node.id)}
     <TreeNode id={node.id} value={node.val} x={node.x} y={node.y} />
 {/each}
 
+<div id="log">
+    {@html getlog()}
+</div>
 <style>
     #canvas {
         position: absolute;
@@ -50,4 +53,14 @@
         background: linear-gradient(#d896ff, #800080, #660066);
         z-index: -1;
     }
+
+    #log{
+        width: 300px;
+        height: 100px;
+        background-color: black;
+        font: arial;
+        color: blanchedalmond;
+        overflow-y: auto;
+    }
+
 </style>

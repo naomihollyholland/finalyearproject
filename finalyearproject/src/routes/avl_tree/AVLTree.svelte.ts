@@ -15,6 +15,9 @@ export interface Node {
     balance: number;
 }
 let i = $state([500, 150]);
+let button = $state(false)
+
+let log = $state("hello!")
 
 let allnodes: Node[] = $state([
     {
@@ -31,6 +34,8 @@ let allnodes: Node[] = $state([
 ]);
 
 export const getNodes = () => allnodes;
+export const getbutton = () => button;
+export const getlog = () => log
 
 export function recalculate_positions() {
     console.log("start of recalculation")
@@ -351,6 +356,7 @@ export function inordersuccessor(node1: Node) {
 
 export function deletenode(node_to_delete: number) {
 
+    button = true
     console.log("node being deleted");
     let node = allnodes.find((node) => node.id === node_to_delete);
     if (node == undefined) {
@@ -403,6 +409,7 @@ export function deletenode(node_to_delete: number) {
 
         recalculate_positions();
         console.log($state.snapshot(allnodes));
+        wait(3).then(() => button = false);
         return;
     }
 
@@ -598,7 +605,12 @@ export function placenode(node1: Node, node2: Node) {
     }
 }
 
+async function wait(x: number) {
+    return new Promise(resolve => setTimeout(resolve, x * 1000));
+}
+
 export function push(nodeinputvalue: number) {
+    button = true
     if (!Number.isInteger(nodeinputvalue)) {
         return;
     }
@@ -627,4 +639,6 @@ export function push(nodeinputvalue: number) {
     console.log("node id: " + node.id + " pushed")
     console.log($state.snapshot(allnodes));
     recalculate_positions();
+    wait(3).then(() => button = false);
+    log = log + "<br> swaws"
 }
