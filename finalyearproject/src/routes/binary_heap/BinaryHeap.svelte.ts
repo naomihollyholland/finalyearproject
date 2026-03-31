@@ -153,39 +153,7 @@ export function getparent(node1: Node) {
     return allnodes.find((node) => node.id == node1.parentid);
 }
 
-// export function heapify(){
-    
-//     let i = 0
-//     length = allnodes.length - 1
-//     console.log(length)
-//     console.log($state.snapshot(allnodes))
-//     let node = undefined;
-//     let parent = undefined
-//     while(i < allnodes.length){
-//         console.log("checking node in position: " + (length - i))
-//         node = allnodes[length - i]
-//         console.log("checking node " + node.id)
-//         parent = getparent(node)
-//         if(parent != undefined){
-//         console.log("parent of node is: " + parent.id)
-//         }
-//         let temp;
-//         if(parent != undefined && node != undefined){
-//             console.log("would check to swap: " + node.id + " and: " + parent.id)
-//             while((comparenodes(node, parent) == 1)){
-//                 swapnodes(node, parent)
-//                 console.log(node.id)
-//                 console.log(parent)
-//                 console.log($state.snapshot(allnodes))
-//                 console.log("swapped nodes: " + parent.id + " & " + node.id)
-//                 temp = $state.snapshot(parent)
 
-                                
-//             }
-//         }
-//         i += 1;    
-//     }    
-// }
 
 export function heapify(){
     
@@ -399,6 +367,7 @@ export function deleteMin(){
     swapnodes(allnodes[0], allnodes[allnodes.length - 1])
     allnodes.splice(allnodes.length-1, 1)
     heapify()
+    recalculate_positions()
 }
 
 export function push(nodeinputvalue : number) {
