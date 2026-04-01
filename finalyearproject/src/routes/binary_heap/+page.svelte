@@ -1,6 +1,6 @@
 <script lang="ts">
     import TreeNode from "../TreeNode.svelte";
-    import { deleteMin, getNodes, push, getbutton } from "./BinaryHeap.svelte.ts";
+    import { deleteMin, getNodes, push, getbutton, getlog } from "./BinaryHeap.svelte.ts";
     import { clearlines, drawlines, makecanvas } from "./canvas.ts";
 
     let size = $derived.by(() => {
@@ -40,6 +40,9 @@
     <TreeNode id={node.id} value={node.val} x={node.x} y={node.y} />
 {/each}
 
+<div id="log">
+    {@html getlog()}
+</div>
 <style>
     #canvas {
         position: absolute;
@@ -48,4 +51,14 @@
         background: linear-gradient(#d896ff, #800080, #660066);
         z-index: -1;
     }
+
+    #log{
+        width: 300px;
+        height: 100px;
+        background-color: black;
+        font: arial;
+        color: blanchedalmond;
+        overflow-y: auto;
+    }
+
 </style>

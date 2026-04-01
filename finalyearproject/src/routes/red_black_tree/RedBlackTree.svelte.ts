@@ -29,6 +29,9 @@ let allnodes: Node[] = $state([
     },
 ]);
 
+let log = $state("hello!")
+export const getlog = () => log
+
 export const getNodes = () => allnodes;
 export const getbutton = () => button;
 

@@ -1,6 +1,6 @@
 <script lang="ts">
     import RedBlackNode from "./RedBlackNode.svelte";
-    import { deletenode, getNodes, push, getbutton} from "./RedBlackTree.svelte.ts";
+    import { deletenode, getNodes, push, getbutton, getlog} from "./RedBlackTree.svelte.ts";
     import { clearlines, drawlines, makecanvas } from "./canvas.ts";
 
     let size = $derived.by(() => {
@@ -42,6 +42,9 @@
     <RedBlackNode id={node.id} value={node.val} x={node.x} y={node.y} isred = {node.isred} />
 {/each}
 
+<div id="log">
+    {@html getlog()}
+</div>
 <style>
     #canvas {
         position: absolute;
@@ -50,4 +53,14 @@
         background: linear-gradient(#d896ff, #800080, #660066);
         z-index: -1;
     }
+
+    #log{
+        width: 300px;
+        height: 100px;
+        background-color: black;
+        font: arial;
+        color: blanchedalmond;
+        overflow-y: auto;
+    }
+
 </style>

@@ -18,6 +18,7 @@ let i = $state([500, 150]);
 let button = $state(false)
 
 let log = $state("hello!")
+export const getlog = () => log
 
 let allnodes: Node[] = $state([
     {
@@ -35,7 +36,6 @@ let allnodes: Node[] = $state([
 
 export const getNodes = () => allnodes;
 export const getbutton = () => button;
-export const getlog = () => log
 
 export function recalculate_positions() {
     console.log("start of recalculation")
