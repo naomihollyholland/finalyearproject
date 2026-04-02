@@ -464,6 +464,59 @@ export function placenode(node1: Node, node2: Node) {
     }
 }
 
+export function searchwithnode(node:Node, nodevalue:number){
+        if(nodevalue == node.val){
+                log += "<br> Node found! id is: " + node.val
+                return;
+            }else if(nodevalue < node.val) {
+                log += "<br> value is less than node, checking left subtree"
+                let leftchild = getleftchild(node)
+                if(leftchild != undefined){
+                    searchwithnode(leftchild, nodevalue)
+                } else {
+                    log += "<br> subtree does not exist! node could not be found."
+                }
+
+            } else if(nodevalue > node.val) {
+                log += "<br> value is greater than node, checking right subtree"
+                let rightchild = getrightchild(node)
+                if(rightchild != undefined){
+                    searchwithnode(rightchild, nodevalue)
+                } else {
+                    log += "<br> subtree does not exist! node could not be found."
+                }
+        }
+}
+
+export function searchfor(nodevalue:number){
+
+    button = true
+    let node = getroot()
+    if(node != undefined){
+        if(nodevalue == node.val){
+            log += "<br> Node found! id is: " + node.val
+        }else if(nodevalue < node.val) {
+            log += "<br> value is less than node, checking left subtree"
+            let leftchild = getleftchild(node)
+            if(leftchild != undefined){
+                searchwithnode(leftchild, nodevalue)
+            } else {
+                log += "<br> subtree does not exist! node could not be found."
+            }
+
+        } else if(nodevalue > node.val) {
+            log += "<br> value is greater than node, checking right subtree"
+            let rightchild = getrightchild(node)
+            if(rightchild != undefined){
+                searchwithnode(rightchild, nodevalue)
+            } else {
+                log += "<br> subtree does not exist! node could not be found."
+            }
+        }
+    }
+    wait(3).then(() => button = false);
+}
+
 export const getbutton = () => button;
 
 export function push(nodeinputvalue: number) {

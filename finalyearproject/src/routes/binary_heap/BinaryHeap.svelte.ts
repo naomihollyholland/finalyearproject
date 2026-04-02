@@ -1,6 +1,7 @@
 
 import type { Attachment } from "svelte/attachments";
 import * as canvas from "./canvas.ts";
+import { get } from "svelte/store";
 
 
 export interface Node {
@@ -39,75 +40,80 @@ export function recalculate_positions() {
     if (root != undefined) {
         heapify()
         calculate_widths(root);
-    }
-    console.log($state.snapshot(allnodes))
-    for (let node of allnodes) {
-        if (node.parentid == null) {
-            console.log("recalc");
-            node.x = i[0];
-            node.y = i[1];
-        }
-        if (node.parentid != null) {
-            let parentnode = getparent(node);
-            if (parentnode != undefined) {
-                node.y = parentnode.y + 125;
-                if (parentnode.lchildid == node.id) {
-                    console.log(
-                        "movement check called on: node " + node.id,
-                    );
-                    
-                    if ((node.x != parentnode.x - (parentnode.width / 3.5))) {
-                        canvas.clearleftchildline(parentnode);
-                        node.x = parentnode.x - (parentnode.width / 3.5);
-                        setTimeout( () => {
-                            canvas.drawparenttoleftchild(parentnode);
-                        }, 1000);
-
-                        canvas.clearleftchildline(node);
-                        setTimeout( () => {
-                            canvas.drawparenttoleftchild(node);
-                        }, 1000);
-
-                        canvas.clearrightchildline(node);
-                        setTimeout( () => {
-                            canvas.drawparenttorightchild(node);
-                        }, 1000);
-
-                        console.log("moved node");
-                    } else {
-                        console.log("did not move node: " + node.id);
-                    }
-                } else {
-                    console.log(
-                        "movement check called on: node " + node.id,
-                    );
-                    if ((node.x != parentnode.x + (parentnode.width / 3.5))) {
-                        canvas.clearrightchildline(parentnode);
-                        node.x = parentnode.x + (parentnode.width / 3.5);
-                        setTimeout(() => {
-                            canvas.drawparenttorightchild(parentnode);
-                        }, 1000);
-
-                        canvas.clearleftchildline(node);
-                        setTimeout(() => {
-                            canvas.drawparenttoleftchild(node);
-                        }, 1000);
-
-                        canvas.clearrightchildline(node);
-                        setTimeout(() => {
-                            canvas.drawparenttorightchild(node);
-                        }, 1000);
-                        console.log("moved node");
-                    } else {
-                        console.log("did not move node: " + node.id)
-                    }
-                }
-            }
-        }
+        reevaluate_coordinate(root)
     }
     checklefftoverrun()
     console.log($state.snapshot(allnodes));
 }
+
+export function reevaluate_coordinate(node: Node) {
+    let parent = getparent(node)
+    let isleftchild = false
+    if (parent == undefined) {
+        node.x = i[0]
+        node.y = i[1]
+        let leftchild = getleftchild(node)
+        let rightchild = getrightchild(node)
+        if (leftchild != null) {
+            reevaluate_coordinate(leftchild)
+        }
+        if (rightchild != null) {
+            reevaluate_coordinate(rightchild)
+        }
+    }
+
+    if (parent != undefined) {
+        if (parent.lchildid == node.id) {
+            isleftchild = true
+        }
+        node.y = parent.y + 125
+        if (isleftchild && node.x != parent.x - (parent.width / 3.5)) {
+            canvas.clearleftchildline(parent);
+
+            node.x = parent.x - (parent.width / 3.5)
+
+            setTimeout(() => {
+                canvas.drawparenttoleftchild(parent);
+            }, 1000)
+            canvas.clearleftchildline(node);
+            setTimeout(() => {
+                canvas.drawparenttoleftchild(node);
+            }, 1000)
+            canvas.clearrightchildline(node);
+            setTimeout(() => {
+                canvas.drawparenttorightchild(node);
+            }, 1000);
+
+        } else if (!isleftchild && node.x != parent.x + (parent.width / 3.5)) {
+            canvas.clearrightchildline(parent);
+            node.x = parent.x + (parent.width / 3.5);
+            setTimeout(() => {
+                canvas.drawparenttorightchild(parent);
+            }, 1000)
+            canvas.clearleftchildline(node);
+            setTimeout(() => {
+                canvas.drawparenttoleftchild(node);
+            }, 1000)
+            canvas.clearrightchildline(node);
+            setTimeout(() => {
+                canvas.drawparenttorightchild(node);
+            }, 1000);
+
+
+        }
+    }
+
+    let leftchild = getleftchild(node)
+    let rightchild = getrightchild(node)
+    if (leftchild != null && leftchild.x != node.x - (node.width / 3.5)) {
+        reevaluate_coordinate(leftchild)
+    }
+    if (rightchild != null && rightchild.x != node.x + (node.width / 3.5)) {
+        reevaluate_coordinate(rightchild)
+    }
+
+}
+
 
 export function checklefftoverrun(){
     let max = 0
@@ -174,15 +180,15 @@ export function getparent(node1: Node) {
 
 export function heapify(){
     
-    let i = 0
+    let j = 0
     length = allnodes.length - 1
     console.log(length)
     console.log($state.snapshot(allnodes))
     let node = undefined;
     let parent = undefined
-    while(i < allnodes.length){
-        console.log("checking node in position: " + (length - i))
-        node = allnodes[length - i]
+    while(j < allnodes.length){
+        console.log("checking node in position: " + (length - j))
+        node = allnodes[length - j]
         console.log("checking node " + node.id)
         parent = getparent(node)
         if(parent != undefined){
@@ -190,8 +196,9 @@ export function heapify(){
         }
         if(parent != undefined && node != undefined){
             console.log("would check to swap: " + node.id + " and: " + parent.id)
-            if(comparenodes(node, parent) == 1){
+            if(comparenodes(node, parent) == -1){
                 swapnodes(node,parent)
+
                 console.log(node.id)
                 console.log(parent)
                 console.log($state.snapshot(allnodes))
@@ -203,8 +210,11 @@ export function heapify(){
                     console.log(node.id)
                     console.log(parent.id)
                     console.log(check)
-                        if(comparenodes(node, parent) == 1 ){
+                        if(comparenodes(node, parent) == -1 ){
                             swapnodes(node, parent)
+
+
+
                             console.log("swapped nodes: " + parent.id + " & " + node.id)
                             let newnode = getparent(node)
                             if(newnode != undefined)
@@ -228,8 +238,13 @@ export function heapify(){
                 
             }
         }
-        i += 1;    
-    }    
+        j += 1;    
+    } 
+    let root = getroot()
+    if(root != undefined){
+        root.x = i[0]
+        root.y = i[1]
+    }   
 }
 
 
@@ -381,6 +396,50 @@ export function swapnodes(node1: Node, node2: Node) {
 
 async function wait(x: number) {
     return new Promise(resolve => setTimeout(resolve, x * 1000));
+}
+
+export function decreasekey(nodeid: number, number:number){
+
+    button = true
+
+    let node = getnode(nodeid)
+
+    if(node != undefined){
+        if(node.val > number){
+            node.val = number
+            log += "<br> value of node replaced!"
+            let parent = getparent(node)
+            let check = true
+            let tempnodeid = node.id
+            while(parent != undefined && check && node != undefined){
+                log += "<br> node compared to parent!"
+                if(node.val < parent.val && node != undefined){
+                    let tempnodeid = node.id
+                    swapnodes(node, parent)
+                    node = getnode(tempnodeid)
+                    if(node != undefined){
+                        parent = getparent(node)
+                    } else {
+                        check = false
+                    }
+                    log += "<br> node is less than parent! swapping and repeating!"
+                } else {
+                    log += "<br> node is greater than parent, ending loop!"
+                    check = false
+                }
+            }
+        }
+        
+    }
+
+    let root = getroot()
+    if(root != undefined){
+        root.x = i[0]
+        root.y = i[1]
+    }   
+    recalculate_positions()
+
+    wait(3).then(() => button = false);
 }
 
 export function deleteMin(){

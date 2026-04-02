@@ -1,6 +1,6 @@
 <script lang="ts">
     import TreeNode from "../TreeNode.svelte";
-    import { deleteMin, getNodes, push, getbutton, getlog } from "./BinaryHeap.svelte.ts";
+    import { deleteMin, getNodes, push, getbutton, getlog, decreasekey} from "./BinaryHeap.svelte.ts";
     import { clearlines, drawlines, makecanvas } from "./canvas.ts";
 
     let size = $derived.by(() => {
@@ -25,6 +25,10 @@
 
     let nodeinputvalue: number = $state(0);
 
+    let decreaseto: number = $state(0);
+    
+    let nodetodecrease: number = $state(0)
+
 </script>
 
 <canvas id="canvas" height={size[1]} width={size[0]} {@attach makecanvas}>
@@ -35,6 +39,12 @@
 
 <br />
 <button onclick={() => deleteMin()} disabled={getbutton()}>delete node</button>
+
+
+<br />
+<input bind:value={nodetodecrease} placeholder="0" type="number" />
+<input bind:value={decreaseto} placeholder="0" type="number" />
+<button onclick={() => decreasekey(nodetodecrease, decreaseto)} disabled={getbutton()}>decrease key of node to</button>
 
 {#each getNodes() as node (node.id)}
     <TreeNode id={node.id} value={node.val} x={node.x} y={node.y} />
