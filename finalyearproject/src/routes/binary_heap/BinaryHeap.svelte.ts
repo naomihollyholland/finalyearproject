@@ -414,7 +414,7 @@ export function decreasekey(nodeid: number, number:number){
             while(parent != undefined && check && node != undefined){
                 log += "<br> node compared to parent!"
                 if(node.val < parent.val && node != undefined){
-                    let tempnodeid = node.id
+                    tempnodeid = node.id
                     swapnodes(node, parent)
                     node = getnode(tempnodeid)
                     if(node != undefined){
@@ -427,6 +427,7 @@ export function decreasekey(nodeid: number, number:number){
                     log += "<br> node is greater than parent, ending loop!"
                     check = false
                 }
+
             }
         }
         

@@ -1,6 +1,6 @@
 <script lang="ts">
     import TreeNode from "../TreeNode.svelte";
-    import { deletenode, getNodes, push, getbutton, getlog} from "./AVLTree.svelte.ts";
+    import { deletenode, getNodes, push, getbutton, getlog, searchfor} from "./AVLTree.svelte.ts";
     import { clearlines, drawlines, makecanvas } from "./canvas.ts";
 
     let size = $derived.by(() => {
@@ -26,6 +26,8 @@
     let nodeinputvalue: number = $state(0);
 
     let node_to_delete: number = $state(0);
+
+    let node_to_find: number = $state(0)
 </script>
 
 <canvas id="canvas" height={size[1]} width={size[0]} {@attach makecanvas}>
@@ -37,6 +39,11 @@
 <br />
 <input bind:value={node_to_delete} placeholder="0" type="number" />
 <button onclick={() => deletenode(node_to_delete)} disabled={getbutton()}>delete node</button>
+
+<br />
+<input bind:value={node_to_find} placeholder="0" type="number" />
+<button onclick={() => searchfor(node_to_find)} disabled={getbutton()} >Search for node with value:</button>
+
 
 {#each getNodes() as node (node.id)}
     <TreeNode id={node.id} value={node.val} x={node.x} y={node.y} />
