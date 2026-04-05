@@ -18,7 +18,7 @@ let button = $state(false)
 let allnodes: Node[] = $state([
     {
         id: 0,
-        val: 1,
+        val: 0,
         x: i[0],
         y: i[1],
         parentid: null,
@@ -26,8 +26,15 @@ let allnodes: Node[] = $state([
         rchildid: null,
         width: 100,
         isred: false
-    },
+    }
 ]);
+
+
+
+
+
+
+
 
 let log = $state("hello!")
 export const getlog = () => log
@@ -126,12 +133,12 @@ export function reevaluate_coordinate(node: Node) {
 }
 
 
-export function checklefftoverrun(){
+export function checklefftoverrun() {
     let max = 0
-    for(let node of allnodes){
-        if((node.x) <  300){
+    for (let node of allnodes) {
+        if ((node.x) < 300) {
             let newval = Math.abs(node.x - 300)
-            if(newval > max){
+            if (newval > max) {
                 max = newval
             }
         }
@@ -306,7 +313,7 @@ export function calculate_widths(node: Node) {
     return node.width;
 }
 
-export function getnode(nodeid: Number) {
+export function getnode(nodeid: number) {
     return allnodes.find((node) => node.id === nodeid);
 }
 
@@ -481,88 +488,35 @@ export function inordersuccessor(node1: Node) {
 }
 
 export function deletenode(node_to_delete: number) {
+
     button = true
     console.log("node being deleted");
     let node = allnodes.find((node) => node.id === node_to_delete);
     if (node == undefined) {
-        wait(3).then(() => button = false);
         return;
     }
-    let doubleblack = false
+
     let swap = getswapcandidate(node);
     let parent = getparent(node);
 
-    if (swap == null) {
-        swap = getrightchild(node)
-    }
+    let doubleblack = false
+    let siblingofdoubleblack: Node | undefined
 
-    //swap is either the right child of the deleting node, or the in order successor
+    let doubleblackisleft
+    //if there is an in order predecessor
     if (swap != null) {
-        console.log("in order successor found!")
+
         let swapparent = getparent(swap)
         let swapleft = getleftchild(swap)
-
-
         let swapparentid = -1
         if (swapparent != undefined) {
             swapparentid = swapparent.id
             console.log(swapparent.id)
         }
 
-        console.log("before swap")
-        console.log($state.snapshot(allnodes))
-
-        //nodes are swapped here
         swapnodes(node, swap);
-
         console.log("nodes swapped");
         console.log($state.snapshot(allnodes))
-
-
-        // at this point, the nodes have been swapped, so swap is where node is, and node is where swap is. 
-
-        let potentialreplacement = null
-        potentialreplacement = getleftchild(node)
-
-        console.log(node.id)
-        if (potentialreplacement != null) {
-            console.log(potentialreplacement.id)
-        } else {
-            console.log(null)
-        }
-
-        //swapleft is black or a null node
-        if (potentialreplacement == null || !potentialreplacement.isred) {
-
-            if (node.isred) {
-                console.log("one black, one red, so replacing node becomes black")
-                // mark the replacing node as black
-                if (potentialreplacement != null) {
-                    potentialreplacement.isred = false
-                }
-            }
-            if (!node.isred) {
-
-                console.log("node is black, and replacing node is black, double black")
-                //double black situation
-                doubleblack = true
-            }
-
-        } else {
-            //potentialreplacement must exist and be red
-
-            if (!node.isred) {
-                console.log("one black, one red, so replacing node becomes black")
-                potentialreplacement.isred = false
-            }
-
-            if (node.isred) {
-                //this should never happen, so im just gonna log something here
-                console.log("double red situation, should be impossible")
-
-            }
-        }
-
         parent = getparent(node);
         if (parent != undefined) {
             if (parent.lchildid == node.id) {
@@ -571,11 +525,78 @@ export function deletenode(node_to_delete: number) {
                 parent.rchildid = null;
             }
         }
-
         console.log("found node to be swapped");
-        $state.snapshot(node.id)
-        $state.snapshot(swap.id)
+
+        swapparent = getnode(swapparentid)
+        console.log(node.parentid)
+        console.log(swap.id)
+        console.log(swapparentid)
+
+        if (node.id == node.parentid) {
+            swapparentid = swap.id
+        }
+
+
+        swapparent = getnode(swapparentid)
+        if (swapparent != undefined) {
+            console.log(swapparent.id)
+        }
+
+
+
+
+        //if the node now has a child, it is black, and the node is black
+        if ((!node.isred && swapleft == undefined) && swapparent != undefined || (swapleft && !swapleft.isred) && swapparent != undefined) {
+            console.log("the replacement node is also black! double black!")
+            console.log("the sibling of this child is the right child of the parent: " + swapparent.rchildid)
+            doubleblack = true
+            doubleblackisleft = true
+            if (swapparent.rchildid != null) {
+                siblingofdoubleblack = getnode(swapparent.rchildid)
+            }
+        } else if (!node.isred && swapleft == undefined && swapparent != undefined) {
+            console.log("no replacement node, and the deleted node is black, double black!")
+            console.log("the sibling of this child is the left child of the parent: " + swapparent.lchildid)
+            doubleblack = true
+            doubleblackisleft = false
+            if (swapparent.lchildid != null) {
+                siblingofdoubleblack = getnode(swapparent.lchildid)
+            }
+        } else if (swapleft != undefined) {
+            swapleft.isred = false
+        }
+
+
+
+
+
+
+        if (swapparent && swapparent.lchildid == node.id) {
+            swapparent.lchildid = null
+        }
+
+
+
         let index = allnodes.findIndex((node) => node.id === node_to_delete);
+
+        if (node != undefined) {
+            console.log("node is red: " + node.isred)
+        }
+
+
+        //remove the pointer from the parent
+
+        let todelete = getnode(index)
+        if(todelete != undefined){
+            let parentofdelete = getparent(todelete)
+            if(parentofdelete != undefined){
+                if(parentofdelete.lchildid == todelete.id){
+                    parentofdelete.lchildid = null
+                } else {
+                    parentofdelete.rchildid = null
+                }
+            }
+        }
 
         allnodes.splice(index, 1);
 
@@ -591,157 +612,6 @@ export function deletenode(node_to_delete: number) {
             }
         }
 
-        console.log("node: " + node_to_delete + " deleted")
-
-        node = swapleft
-
-        while (doubleblack && node && swapleft) {
-            console.log("double black detected: " + node.id)
-            //if the sibling is black and one of the sibling's children is red
-            let sibling = null
-            let siblingisleft = null
-            let nodeparent = getparent(node)
-
-            if (nodeparent == null) {
-                doubleblack = false
-                break;
-            }
-
-            if (nodeparent && nodeparent.lchildid == swapleft.id) {
-                //the left child of the new node's parent is the new node
-                //so the sibling is the right child
-                sibling = getrightchild(nodeparent)
-                siblingisleft = false
-            } else if (nodeparent && nodeparent.rchildid == swapleft.id) {
-                sibling = getleftchild(nodeparent)
-                siblingisleft = true
-            }
-            //get the colour of the sibling
-            let siblingcolour = null
-            let siblingleftchild = null
-            let siblingrightchild = null
-
-            let siblingleftchildcolour = null
-            let siblingrightchildcolour = null
-
-            if (sibling != undefined) {
-                siblingcolour = sibling.isred
-                siblingleftchild = getleftchild(sibling)
-                siblingrightchild = getrightchild(sibling)
-
-                if (siblingleftchild != undefined) {
-                    siblingleftchildcolour = siblingleftchild.isred
-                }
-                if (siblingrightchild != undefined) {
-                    siblingrightchildcolour = siblingrightchild.isred
-                }
-            }
-
-
-            //if the sibling does not exist or it is black and its children are black (equivalent)
-            if ((sibling == null) || (!siblingcolour && !siblingleftchildcolour && !siblingrightchildcolour)) {
-                console.log("sibling either does not exist or it is black and its children are also black")
-                if (sibling != null) {
-                    sibling.isred = true
-                    if (node.isred) {
-                        node.isred = false
-                    } else {
-                        node = getparent(node)
-                    }
-                }
-            }
-
-
-            //left left case
-
-            //if the sibling's LEFT child is red, and the sibling is the LEFT child
-
-            if (sibling && !siblingcolour && siblingleftchild && siblingleftchildcolour && siblingisleft) {
-                console.log("sibling is left child, sibling's left child is red")
-                siblingleftchild.isred = false
-                rightrotation(sibling)
-                doubleblack = false
-            }
-
-            //left right case
-
-            //if the sibling is the RIGHT child and the sibling's LEFT child is red
-
-            if (sibling && !siblingcolour && siblingleftchild && siblingleftchildcolour && !siblingisleft) {
-
-                console.log("sibling is right child, sibling's left child is red")
-
-                sibling.isred = true
-                siblingleftchild.isred = false
-                rightrotation(siblingleftchild)
-
-                sibling.isred = false
-                leftrotation(siblingleftchild)
-                doubleblack = false
-            }
-
-            //right right case
-
-            //if the siblings RIGHT child is red, and the sibling is the RIGHT child
-
-            if (sibling && !siblingcolour && siblingrightchild && siblingrightchildcolour && !siblingisleft) {
-
-                console.log("sibling is right child, sibling's right child is red")
-
-                siblingrightchild.isred = false
-                leftrotation(sibling)
-                doubleblack = false
-            }
-
-            //right left case
-
-            //if the sibling is the LEFT child and the siblings RIGHT child is red
-
-            if (sibling && !siblingcolour && siblingrightchild && siblingrightchildcolour && siblingisleft) {
-
-                console.log("sibling is left child, sibling's right child is red")
-
-                sibling.isred = true
-                siblingrightchild.isred = false
-                leftrotation(siblingrightchild)
-
-                sibling.isred = false
-                rightrotation(siblingrightchild)
-                doubleblack = false
-            }
-
-            //if sibling is RED
-            if (sibling && siblingcolour) {
-                console.log("sibling is red")
-                if (nodeparent && siblingisleft) {
-                    console.log("sibling is left child")
-                    sibling.isred = false
-                    nodeparent.isred = true
-                    rightrotation(sibling)
-
-
-                } else if (nodeparent && !siblingisleft) {
-
-                    console.log("sibling is right child")
-
-                    sibling.isred = false
-                    nodeparent.isred = true
-                    leftrotation(sibling)
-
-                }
-            }
-
-
-        }
-
-
-
-        let root = getroot()
-
-        if (root != null) {
-            root.isred = false
-        }
-
         recalculate_positions();
         console.log($state.snapshot(allnodes));
         wait(3).then(() => button = false);
@@ -750,27 +620,391 @@ export function deletenode(node_to_delete: number) {
 
 
     if (swap == null) {
-        console.log("no in order successor");
+        console.log("the node to be deleted does not have any in order predecessor")
+        console.log("no in order predecessor");
+
+        let nodecolour: boolean = node.isred
+        let replacecolour: boolean = false
+
+        let replacementisleft: boolean = true
+
         let rightchild = getrightchild(node);
         let leftchild = getleftchild(node)
-        parent = getparent(node);
+        parent = getparent(node)
+
+        let nodeisleftchild = true
+
+        if (parent != undefined && parent.rchildid == node.id) {
+            nodeisleftchild = false
+        }
+
+
         if (parent != undefined) {
             if (rightchild != undefined) {
                 rightchild.parentid = parent.id
                 parent.rchildid = rightchild.id
+                replacecolour = rightchild.isred
+                replacementisleft = false
 
             } else if (leftchild != undefined) {
                 leftchild.parentid = parent.id
                 parent.lchildid = leftchild.id
+                replacecolour = leftchild.isred
+                replacementisleft = true
             }
         } else if (rightchild != undefined && parent == undefined) {
             rightchild.parentid = null;
+            replacecolour = rightchild.isred
+            replacementisleft = false
         }
         let index = allnodes.findIndex(
             (node) => node.id === node_to_delete,
         );
 
+        let todelete = getnode(index)
+        if(todelete != undefined){
+            let parentofdelete = getparent(todelete)
+            if(parentofdelete != undefined){
+                if(parentofdelete.lchildid == todelete.id){
+                    parentofdelete.lchildid = null
+                } else {
+                    parentofdelete.rchildid = null
+                }
+            }
+        }
+        
+        console.log("last splice")
         allnodes.splice(index, 1);
+
+        if (node != undefined) {
+            console.log("node is red: " + nodecolour)
+            console.log("replacement is red: " + replacecolour)
+        }
+
+
+        console.log($state.snapshot(allnodes))
+
+        console.log(rightchild)
+
+        //one of the node or the replacement is black
+        if ((nodecolour && !replacecolour) || (!nodecolour && replacecolour)) {
+            console.log("one of the children or replacements is red")
+            if (!replacementisleft && rightchild) {
+                rightchild.isred = false
+            } else {
+                if (leftchild != undefined) {
+                    leftchild.isred = false
+                }
+
+            }
+        }
+
+        console.log($state.snapshot(allnodes))
+
+        if (!nodecolour && !replacecolour) {
+            console.log("double black!")
+            if (replacementisleft && leftchild != undefined) {
+                console.log("a black node exists, and is replacing the node")
+                console.log("the left child: " + leftchild.id + " is a double black!")
+                doubleblackisleft = true
+
+                doubleblack = true
+                let parentofdoubleblack = getparent(leftchild)
+                if (parentofdoubleblack != undefined) {
+                    if (parentofdoubleblack.rchildid == leftchild.id) {
+                        siblingofdoubleblack = getleftchild(parentofdoubleblack)
+                    } else if (parentofdoubleblack.lchildid == leftchild.id) {
+                        siblingofdoubleblack = getrightchild(parentofdoubleblack)
+                    }
+                }
+
+            } else if (!replacementisleft && rightchild != undefined) {
+                console.log("a black node exists, and is replacing the node")
+                console.log("the right child: " + rightchild.id + " is a double black!")
+
+
+                doubleblack = true
+                doubleblackisleft = false
+                let parentofdoubleblack = getparent(rightchild)
+                if (parentofdoubleblack != undefined) {
+                    if (parentofdoubleblack.rchildid == rightchild.id) {
+                        siblingofdoubleblack = getleftchild(parentofdoubleblack)
+                    } else if (parentofdoubleblack.lchildid == rightchild.id) {
+                        siblingofdoubleblack = getrightchild(parentofdoubleblack)
+                    }
+                }
+
+
+            } else {
+                console.log("a null node exists, and is replacing the node")
+                if (parent != undefined && nodeisleftchild) {
+                    console.log("the null left child of parent: " + parent.id + " is double black!")
+                    console.log("the sibling of this child is the right child of the parent: " + parent.rchildid)
+                    doubleblackisleft = true
+                    doubleblack = true
+                    if (parent.rchildid != null) {
+                        siblingofdoubleblack = getnode(parent.rchildid)
+                    }
+
+                } else if (parent != undefined && !nodeisleftchild) {
+                    console.log("the null right child of parent: " + parent.id + " is double black!")
+                    console.log("the sibling of this child is the left child of the parent: " + parent.lchildid)
+                    doubleblackisleft = false
+                    doubleblack = true
+                    if (parent.lchildid != null) {
+                        siblingofdoubleblack = getnode(parent.lchildid)
+                    }
+                } else {
+                    console.log("no parent! the tree is empty?")
+                }
+            }
+        }
+
+        console.log($state.snapshot(allnodes))
+        console.log($state.snapshot(siblingofdoubleblack))
+
+
+        //if there was a double black, handle it here!
+
+
+        if (doubleblack && siblingofdoubleblack) {
+            console.log("handling the double black")
+            let parentofsibling = getparent(siblingofdoubleblack)
+            //while node is not double black
+            while (doubleblack) {
+
+                console.log("looping!")
+                console.log("sibling id: " + siblingofdoubleblack.id)
+                console.log($state.snapshot(allnodes))
+                //if sibling is black and at least one of siblings children is red
+                let siblingleftchild
+                let siblingrightchild
+                if (siblingofdoubleblack == undefined) {
+                    siblingleftchild = null
+                    siblingrightchild = null
+                } else {
+                    siblingleftchild = getleftchild(siblingofdoubleblack)
+                    siblingrightchild = getrightchild(siblingofdoubleblack)
+                }
+                console.log(siblingleftchild)
+                console.log(siblingrightchild)
+
+
+                let siblingisleft = null
+                if (parentofsibling != undefined) {
+                    if (parentofsibling.lchildid == siblingofdoubleblack.id) {
+                        siblingisleft = true
+                    } else {
+                        siblingisleft = false
+                    }
+                }
+
+                //if the sibling is black, but has a red child
+                if (!siblingofdoubleblack.isred && (siblingleftchild && siblingleftchild.isred) || (siblingrightchild && siblingrightchild.isred)) {
+
+                    if (siblingisleft) {
+                        //if sibling is the left child of the parent, and the left child of the sibling is red
+                        if (siblingleftchild && siblingleftchild.isred && parentofsibling) {
+                            //left left case
+                            console.log("left-left case")
+                            siblingleftchild.isred = false
+                            rightrotation(parentofsibling)
+                            doubleblack = false
+                        }
+                        //if the sibling is the left child of the parent, and the right child of the sibling is red
+                        else if (siblingrightchild && siblingrightchild.isred && parentofsibling) {
+                            //left right case
+
+                            console.log("left-right case")
+                            siblingrightchild.isred = false
+                            siblingofdoubleblack.isred = true
+                            leftrotation(siblingrightchild)
+
+                            siblingofdoubleblack.isred = false
+                            rightrotation(siblingrightchild)
+                            doubleblack = false
+
+                        }
+                    } else {
+
+                        //if sibling is the right child of the parent, and the left child of the sibling is red
+                        if (siblingrightchild && siblingleftchild && siblingleftchild.isred && parentofsibling) {
+                            //right left case
+                            console.log("right-left case")
+
+                            siblingrightchild.isred = false
+                            siblingofdoubleblack.isred = true
+                            console.log(siblingofdoubleblack.id)
+                            rightrotation(siblingleftchild)
+
+                            siblingofdoubleblack.isred = true
+                            leftrotation(parentofsibling)
+
+                            siblingofdoubleblack.isred = true
+
+
+                            doubleblack = false
+
+                        }
+                        //if the sibling is the left child of the parent, and the right child of the sibling is red
+                        else if (siblingrightchild && siblingrightchild.isred && parentofsibling) {
+                            //right right case
+                            console.log("right-right case")
+                            siblingrightchild.isred = false
+                            leftrotation(parentofsibling)
+
+                            doubleblack = false
+
+                        }
+
+                    }
+
+
+                    //if the sibling is black and both children are black
+                } else if ((parentofsibling != undefined && !siblingofdoubleblack) || parentofsibling != undefined && !siblingofdoubleblack.isred && (siblingleftchild == null || !siblingleftchild.isred) && (siblingrightchild == null || !siblingrightchild.isred)) {
+                    console.log("sibling is black and both children are black")
+
+
+                    if (siblingofdoubleblack != undefined) {
+                        siblingofdoubleblack.isred = true
+                    }
+
+                    if (parentofsibling.isred) {
+                        parentofsibling.isred = false
+                        doubleblack = false
+                    } else {
+
+                        //check the double black on the parent
+                        let grandparent = getparent(parentofsibling)
+                        if (grandparent != null && grandparent.lchildid == parentofsibling.id) {
+                            doubleblackisleft = true
+                            siblingofdoubleblack = getrightchild(grandparent)
+
+
+                        } else if (grandparent != null) {
+                            doubleblackisleft = false
+                            siblingofdoubleblack = getleftchild(grandparent)
+
+                        }
+
+                        let root = getroot()
+                        while (siblingofdoubleblack == undefined || grandparent != root) {
+                            //check the double black on the parent
+                            console.log("looping again to try and find a sibling")
+                            let grandparent = getparent(parentofsibling)
+                            if (grandparent != null && grandparent.lchildid == parentofsibling.id) {
+                                doubleblackisleft = true
+                                siblingofdoubleblack = getrightchild(grandparent)
+                                parentofsibling = grandparent
+
+
+                            } else if (grandparent != null) {
+                                doubleblackisleft = false
+                                siblingofdoubleblack = getleftchild(grandparent)
+                                parentofsibling = grandparent
+                            }
+                        }
+                        //temp
+                        doubleblack = false
+                    }
+                } else if (parentofsibling && siblingofdoubleblack.isred) {
+                    console.log("sibling is red")
+                    parentofsibling.isred = true
+                    siblingofdoubleblack.isred = false
+
+                    if(doubleblackisleft){
+                        //sibling is on the right
+                        leftrotation(parentofsibling)
+                        console.log("sibling rotated left")
+                    } else {
+                        //sibling is on the left
+                        rightrotation(parentofsibling)
+                        console.log("sibling rotated right")
+                    }
+
+
+                    if (doubleblackisleft) {
+                    
+                        //get the new sibling
+
+                        let parentright = getrightchild(parentofsibling)
+                        
+                        console.log($state.snapshot(parentright))
+
+                        if (parentright != undefined) {
+                            parentright.isred = true
+                            
+                            let parentrightlchild = getleftchild(parentright)
+                            let parentrightrchild = getrightchild(parentright)
+
+                            if(parentrightrchild != undefined && parentrightrchild.isred){
+                                console.log("right-right")
+                                parentright.isred = false
+                                parentofsibling.isred=true
+                                leftrotation(parentofsibling)
+                            } else if (parentrightlchild != undefined && parentrightlchild.isred){
+                                console.log("right-left")
+                                parentrightlchild.isred = false
+                                parentofsibling.isred = true
+
+                                rightrotation(parentright)
+                                leftrotation(parentofsibling)
+
+                            }
+                        }
+
+                    } else if (!doubleblackisleft) {
+                        let parentleft = getleftchild(parentofsibling)
+
+
+                        if (parentleft != undefined) {
+                            console.log("4 is here?????? " + parentleft.id)
+                            parentleft.isred = true
+
+                            let parentleftlchild = getleftchild(parentleft)
+                            let parentleftrchild = getrightchild(parentleft)
+
+                            if(parentleftlchild != undefined && parentleftlchild.isred){
+                                console.log("left-left")
+                                parentleft.isred = false
+                                parentofsibling.isred = true
+                                rightrotation(parentofsibling)
+
+                            }
+                            else if(parentleftrchild != undefined && parentleftrchild.isred){
+                                console.log("left-right")
+                                parentleftrchild.isred = false
+                                parentofsibling.isred = true
+
+
+                                leftrotation(parentleft)
+                                rightrotation(parentofsibling)
+                            }
+
+
+
+
+
+                            doubleblack = false
+                        }
+                    }
+
+
+                }
+
+            }
+
+
+
+        }
+
+
+        let root = getroot()
+        if(root != null){
+            root.isred = false
+        }
+
+
         console.log($state.snapshot(allnodes));
         recalculate_positions();
         wait(3).then(() => button = false);
@@ -788,10 +1022,10 @@ export function leftrotation(tobeleft: Node) {
     let parent = getparent(tobeleft)
 
     if (parent && child) {
-        if (parent.rchildid == tobeleft.id) {
-            parent.rchildid = child.id
-        } else {
+        if (parent.lchildid == tobeleft.id) {
             parent.lchildid = child.id
+        } else {
+            parent.rchildid = child.id
         }
         child.parentid = parent.id
     } else {
@@ -812,10 +1046,10 @@ export function leftrotation(tobeleft: Node) {
             tobeleft.rchildid = leftchildofchild.id
             leftchildofchild.parentid = tobeleft.id
         }
-        if (tobeleft.rchildid == child.id) {
-            tobeleft.rchildid = null
-        } else if (tobeleft.lchildid == child.id) {
+        if (tobeleft.lchildid == child.id) {
             tobeleft.lchildid = null
+        } else if (tobeleft.rchildid == child.id) {
+            tobeleft.rchildid = null
         }
     }
 }
@@ -946,5 +1180,5 @@ export function push(nodeinputvalue: number) {
     console.log($state.snapshot(allnodes));
     comparecolours(node)
     recalculate_positions();
-    wait(3).then(() => button = false);
+    wait(1).then(() => button = false);
 }
