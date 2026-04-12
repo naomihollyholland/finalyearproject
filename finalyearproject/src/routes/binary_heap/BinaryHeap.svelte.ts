@@ -125,6 +125,12 @@ export function checklefftoverrun(){
             }
         }
     }
+
+    if(max > 0){
+        max += 50
+    }
+
+
     i[0] = i[0] + max
 }
 

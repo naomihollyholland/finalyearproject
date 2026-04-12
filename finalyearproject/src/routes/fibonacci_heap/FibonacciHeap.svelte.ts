@@ -102,6 +102,10 @@ export function checklefftoverrun(){
             }
         }
     }
+    if(max > 0){
+        max += 50
+    }
+
     i[0] = i[0] + max
 }
 
@@ -256,33 +260,6 @@ export function deletemin() {
         }
         console.log(array)
     }
-
-    // if (itemasnode != null) {
-    // console.log("checking:" + itemasnode.id)
-    // if (array[itemasnode.degree] != null) {
-    // console.log("checking for conflict")
-    // 
-    // let storednode = getnode(array[itemasnode.degree])
-    // if (storednode != null) {
-    // console.log("conflict of: " + itemasnode.id + " and " + storednode.id)
-    // if (itemasnode.val > storednode.val) {
-    // array[itemasnode.degree] = null
-    // union(storednode, itemasnode)
-    // array[itemasnode.degree] = itemasnode.id
-    // 
-    // } else {
-    // array[itemasnode.degree] = null
-    // union(itemasnode, storednode)
-    // array[itemasnode.degree] = itemasnode.id
-    // }
-    // console.log(array)
-    // }
-    // 
-    // }
-    // array[itemasnode.degree] = itemasnode.id
-    // }
-    // console.log(array)
-    // }
 
     let val = null
     let min_id = null
