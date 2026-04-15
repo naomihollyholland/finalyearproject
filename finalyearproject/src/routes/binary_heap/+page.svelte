@@ -14,11 +14,6 @@
                 ymax = node.y;
             }
         }
-
-        clearlines();
-        setTimeout(function () {
-            drawlines();
-        }, 1000);
         return [xmax + 150, ymax + 150];
     });
 

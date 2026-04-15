@@ -136,8 +136,8 @@ export function reevaluate_coordinate(node: Node) {
 export function checklefftoverrun() {
     let max = 0
     for (let node of allnodes) {
-        if ((node.x) < 300) {
-            let newval = Math.abs(node.x - 300)
+        if ((node.x) < 500) {
+            let newval = Math.abs(node.x - 500)
             if (newval > max) {
                 max = newval
             }

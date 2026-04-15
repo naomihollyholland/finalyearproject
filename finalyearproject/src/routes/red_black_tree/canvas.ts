@@ -3,6 +3,8 @@ import type { Attachment } from "svelte/attachments";
 import type { Node } from "./RedBlackTree.svelte.ts";
 import * as treestruct from "./RedBlackTree.svelte.ts";
 
+
+
 let canvas: HTMLCanvasElement;
 let ctx: CanvasRenderingContext2D | null;
 export const makecanvas: Attachment<HTMLCanvasElement> = (element) => {
@@ -18,14 +20,18 @@ export const makecanvas: Attachment<HTMLCanvasElement> = (element) => {
 
 
 export function clearlines() {
-    if (ctx != undefined) {
+    wait(0.5).then(() => clearlinesifctx(ctx));
+}
+
+export function clearlinesifctx(ctx: CanvasRenderingContext2D | null) {
+    if (ctx) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 }
 
 export function drawlines() {
-    //console.log("canvas: " + canvas);
-    //console.log("ctx: " + ctx);
+    console.log("canvas: " + canvas);
+    console.log("ctx: " + ctx);
     if (ctx != undefined && canvas != undefined) {
         for (let node of treestruct.getNodes()) {
             ctx.beginPath();
@@ -33,19 +39,24 @@ export function drawlines() {
             ctx.lineWidth = 10;
             let leftchild = treestruct.getleftchild(node);
             if (leftchild != undefined) {
-                ctx.moveTo(node.x + 50, node.y + 50);
-                ctx.lineTo(leftchild.x + 50, leftchild.y + 50);
-                ctx.stroke();
+                wait(1.5).then(() => drawlinesifctx(ctx, node.x, node.y, leftchild.x, leftchild.y))
             }
 
             //for right child
             let rightchild = treestruct.getrightchild(node);
             if (rightchild != undefined) {
-                ctx.moveTo(node.x + 50, node.y + 50);
-                ctx.lineTo(rightchild.x + 50, rightchild.y + 50);
-                ctx.stroke();
+                wait(1.5).then(() => drawlinesifctx(ctx, node.x, node.y, rightchild.x, rightchild.y))
             }
         }
+    }
+}
+
+
+function drawlinesifctx(ctx: CanvasRenderingContext2D | null, node1x: number, node1y: number, node2x: number, node2y: number) {
+    if (ctx) {
+        ctx.moveTo(node1x + 50, node1y + 50);
+        ctx.lineTo(node2x + 50, node2y + 50);
+        ctx.stroke();
     }
 }
 
@@ -55,9 +66,7 @@ export function drawparenttoleftchild(node1: Node) {
         ctx.lineWidth = 10;
         let leftchild = treestruct.getleftchild(node1);
         if (leftchild != undefined) {
-            ctx.moveTo(node1.x + 50, node1.y + 50);
-            ctx.lineTo(leftchild.x + 50, leftchild.y + 50);
-            ctx.stroke();
+                wait(1.5).then(() => drawlinesifctx(ctx, node1.x, node1.y, leftchild.x, leftchild.y))
         }
     }
 }
@@ -68,9 +77,7 @@ export function drawparenttorightchild(node1: Node) {
         ctx.lineWidth = 10;
         let rightchild = treestruct.getrightchild(node1);
         if (rightchild != undefined) {
-            ctx.moveTo(node1.x + 50, node1.y + 50);
-            ctx.lineTo(rightchild.x + 50, rightchild.y + 50);
-            ctx.stroke();
+                wait(1.5).then(() => drawlinesifctx(ctx, node1.x, node1.y, rightchild.x, rightchild.y))
         }
     }
 }
@@ -91,18 +98,23 @@ export function clearleftchildline(node1: Node) {
         if (rightpos - leftpos < 0) {
             fin = node1.width;
         }
-    //    console.log(
-    //         "clearing rectangle of: " +
-    //         fin +
-    //         ", " +
-    //         height +
-    //         " starting at: " +
-    //         leftpos +
-    //         ", " +
-    //         node1.y,
-    //     );
-        ctx.clearRect(leftpos, node1.y, fin, height);
+        console.log(
+            "clearing rectangle of: " +
+            fin +
+            ", " +
+            height +
+            " starting at: " +
+            leftpos +
+            ", " +
+            node1.y,
+        );
+        wait(0.5).then(() => clearlineifctx(ctx, leftpos, node1.y, fin, height));
+
     }
+}
+
+async function wait(x: number) {
+    return new Promise(resolve => setTimeout(resolve, x * 1000));
 }
 
 export function clearrightchildline(node1: Node) {
@@ -121,16 +133,25 @@ export function clearrightchildline(node1: Node) {
         if (rightpos - leftpos < 0) {
             fin = node1.width;
         }
-        // console.log(
-        //     "clearing rectangle of: " +
-        //     fin +
-        //     ", " +
-        //     height +
-        //     "starting at: " +
-        //     leftpos +
-        //     ", " +
-        //     node1.y,
-        // );
-        ctx.clearRect(leftpos, node1.y, fin, height);
+        console.log(
+            "clearing rectangle of: " +
+            fin +
+            ", " +
+            height +
+            "starting at: " +
+            leftpos +
+            ", " +
+            node1.y,
+        );
+
+        wait(0.5).then(() => clearlineifctx(ctx, leftpos, node1.y, fin, height));
+
     }
 }
+
+export function clearlineifctx(ctx: CanvasRenderingContext2D | null, leftpos: number, toppos: number, width: number, height: number) {
+    if (ctx != null) {
+        ctx.clearRect(leftpos, toppos, width, height)
+    }
+}
+
