@@ -88,9 +88,11 @@ export function recalculate_positions() {
 
 
     }
-
     checklefftoverrun()
+
+    wait(1.5).then( () => canvas.drawlines())
 }
+
 
 export function checklefftoverrun(){
     let max = 0
@@ -111,7 +113,6 @@ export function checklefftoverrun(){
 
 //given the root first, then everything else after, if it changes
 export function reevaluate_coordinates_of_children(node: Node) {
-
     let basepos = node.x
 
     if (node.children != null) {
@@ -124,13 +125,14 @@ export function reevaluate_coordinates_of_children(node: Node) {
                 if (childasnode.x != basepos) {
                     childasnode.x = basepos
                     //canvas.clearchildlines(node)
+                    canvas.clearlines()
                     reevaluate_coordinates_of_children(childasnode)
                 }
 
                 basepos += childasnode.width
             }
         }
-        canvas.drawlines()
+        console.log("reevaluated")
     }
 
 }
@@ -160,6 +162,7 @@ export function calculate_widths(node: Node) {
 
 export function deletemin() {
     button = true
+    canvas.clearlines()
     let min;
     let index = 0
     let allnodesid = -1
@@ -322,6 +325,7 @@ export function getparent(node1: Node) {
 
 //takes two nodes, changes base's children to include the item toappend
 export function union(base: Node, toappend: Node) {
+    canvas.clearlines()
     console.log("union of: " + base.id + " and " + toappend.id)
     base.degree += 1;
     if (base.children != null) {
@@ -345,9 +349,9 @@ export function union(base: Node, toappend: Node) {
     }
     toappend.parentid = base.id
 
+
     reevaluate_coordinates_of_children(base)
-    canvas.clearchildlines(base)
-    canvas.drawlines()
+    wait(1.5).then(() => canvas.drawlines())
     console.log($state.snapshot(allnodes))
 }
 
@@ -355,7 +359,7 @@ export function placenode(node1: Node, node2: Node) {
     console.log($state.snapshot(allnodes));
     if (comparenodes(node1, node2) <= 0) {
     } else {
-        recalculate_positions();
+        wait(0.5).then(() => recalculate_positions());
         return;
     }
 }
@@ -372,8 +376,8 @@ export function push(nodeinputvalue: number) {
     let node = {
         id: id,
         val: nodeinputvalue,
-        x: 500,
-        y: 500,
+        x: 700,
+        y: 35,
         parentid: null,
         children: null,
         width: 100,
@@ -411,6 +415,6 @@ export function push(nodeinputvalue: number) {
     }
     console.log("node id: " + node.id + " pushed")
     console.log($state.snapshot(allnodes));
-    recalculate_positions();
+    wait(0.5).then(() => recalculate_positions());
     wait(3).then(() => button = false);
 }

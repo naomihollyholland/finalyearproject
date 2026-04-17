@@ -223,7 +223,7 @@ export function calculate_widths(node: Node) {
     let leftchild = getleftchild(node);
     let rightchild = getrightchild(node);
     if (leftchild == undefined && rightchild == undefined) {
-        node.width = 150;
+        node.width = 200;
         return node.width;
     }
     if (leftchild != undefined) {

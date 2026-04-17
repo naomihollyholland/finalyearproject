@@ -139,10 +139,61 @@ export function calculate_widths(node: Node) {
     if (rightchild != undefined) {
         totalwidth += calculate_widths(rightchild);
     }
+    let left = inorderpredecessor(node, false);
+    let right = inordersuccessor(node, false);
 
-
+    if (left != undefined && right != undefined) {
+        if (left.x + 200 > right.x) {
+            totalwidth += 200;
+        }
+    }
     node.width = totalwidth;
     return node.width;
+}
+
+export function inorderpredecessor(node1: Node, isloud: boolean) {
+    let lchild = getleftchild(node1);
+    let inorderpredecessor = lchild;
+    if (inorderpredecessor != undefined) {
+        console.log("looping to find in order predecessor");
+        let rightchild = getrightchild(inorderpredecessor);
+        while (rightchild != undefined) {
+            inorderpredecessor = rightchild;
+            rightchild = getrightchild(rightchild);
+        }
+        if (isloud) {
+            log = ">Found in order successor, with id " + inorderpredecessor.id + ".<br>" + log
+        }
+
+        return inorderpredecessor;
+    }
+    if (isloud) {
+        log = ">Could not find in order predecessor.<br>" + log
+    }
+
+    return undefined;
+}
+
+export function inordersuccessor(node1: Node, isloud: boolean) {
+    let rchild = getrightchild(node1);
+    let inordersuccessor = rchild;
+    if (inordersuccessor != undefined) {
+        console.log("looping to find in order successor");
+        let leftchild = getleftchild(inordersuccessor);
+        while (leftchild != undefined) {
+            inordersuccessor = leftchild;
+            leftchild = getleftchild(leftchild);
+        }
+        if (isloud) {
+            log = ">Found in order successor, with id " + inordersuccessor.id + ".<br>" + log
+        }
+        return inordersuccessor;
+    }
+    if (isloud) {
+        log = ">Could not find in order successor.<log>" + log
+    }
+
+    return undefined;
 }
 
 export function getnode(nodeid: Number) {

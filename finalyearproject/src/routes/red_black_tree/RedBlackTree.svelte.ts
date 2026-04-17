@@ -298,7 +298,7 @@ export function calculate_widths(node: Node) {
     let leftchild = getleftchild(node);
     let rightchild = getrightchild(node);
     if (leftchild == undefined && rightchild == undefined) {
-        node.width = 100;
+        node.width = 200;
         return node.width;
     }
     if (leftchild != undefined) {
@@ -307,8 +307,8 @@ export function calculate_widths(node: Node) {
     if (rightchild != undefined) {
         totalwidth += calculate_widths(rightchild);
     }
-    let left = inorderpredecessor(node);
-    let right = inordersuccessor(node);
+    let left = inorderpredecessor(node, false);
+    let right = inordersuccessor(node, false);
 
     if (left != undefined && right != undefined) {
         if (left.x + 200 > right.x) {
@@ -463,7 +463,7 @@ export function getswapcandidate(node1: Node) {
     return null;
 }
 
-export function inorderpredecessor(node1: Node) {
+export function inorderpredecessor(node1: Node, isloud: boolean) {
     let lchild = getleftchild(node1);
     let inorderpredecessor = lchild;
     if (inorderpredecessor != undefined) {
@@ -473,12 +473,20 @@ export function inorderpredecessor(node1: Node) {
             inorderpredecessor = rightchild;
             rightchild = getrightchild(rightchild);
         }
+        if (isloud) {
+            log = ">Found in order successor, with id " + inorderpredecessor.id + ".<br>" + log
+        }
+
         return inorderpredecessor;
     }
+    if (isloud) {
+        log = ">Could not find in order predecessor.<br>" + log
+    }
+
     return undefined;
 }
 
-export function inordersuccessor(node1: Node) {
+export function inordersuccessor(node1: Node, isloud: boolean) {
     let rchild = getrightchild(node1);
     let inordersuccessor = rchild;
     if (inordersuccessor != undefined) {
@@ -488,8 +496,15 @@ export function inordersuccessor(node1: Node) {
             inordersuccessor = leftchild;
             leftchild = getleftchild(leftchild);
         }
+        if (isloud) {
+            log = ">Found in order successor, with id " + inordersuccessor.id + ".<br>" + log
+        }
         return inordersuccessor;
     }
+    if (isloud) {
+        log = ">Could not find in order successor.<log>" + log
+    }
+
     return undefined;
 }
 
@@ -508,6 +523,7 @@ export function deletenode(node_to_delete: number) {
     let doubleblack = false
     let siblingofdoubleblack: Node | undefined
 
+    console.log($state.snapshot(allnodes))
     let doubleblackisleft
     //if there is an in order predecessor
     if (swap != null) {
@@ -618,7 +634,7 @@ export function deletenode(node_to_delete: number) {
             }
         }
 
-        recalculate_positions();
+        wait(0.5).then(() => recalculate_positions());
         console.log($state.snapshot(allnodes));
         wait(3).then(() => button = false);
         return;
@@ -667,13 +683,16 @@ export function deletenode(node_to_delete: number) {
             (node) => node.id === node_to_delete,
         );
 
+
         let todelete = getnode(index)
         if(todelete != undefined){
             let parentofdelete = getparent(todelete)
             if(parentofdelete != undefined){
                 if(parentofdelete.lchildid == todelete.id){
+                    console.log(todelete.id)
                     parentofdelete.lchildid = null
                 } else {
+                    console.log(todelete.id)
                     parentofdelete.rchildid = null
                 }
             }
@@ -1012,7 +1031,8 @@ export function deletenode(node_to_delete: number) {
 
 
         console.log($state.snapshot(allnodes));
-        recalculate_positions();
+        wait(0.5).then(() => recalculate_positions());
+        
         wait(3).then(() => button = false);
         return;
     }
@@ -1107,7 +1127,7 @@ export function placenode(node1: Node, node2: Node) {
             node2.lchildid = node1.id;
             node1.parentid = node2.id;
             //console.log(node1, node2);
-            recalculate_positions();
+            wait(0.5).then(() => recalculate_positions());
         } else {
             console.log("finding left child:");
             console.log(
@@ -1123,23 +1143,24 @@ export function placenode(node1: Node, node2: Node) {
                 node1,
                 allnodes.find((node) => node.id === node2.lchildid) as Node,
             );
-            recalculate_positions();
+            wait(0.5).then(() => recalculate_positions());
+        
         }
     } else if (comparenodes(node1, node2) > 0) {
         if (node2.rchildid == null) {
             node2.rchildid = node1.id;
             node1.parentid = node2.id;
             //console.log(node1, node2);
-            recalculate_positions();
+            wait(0.5).then(() => recalculate_positions());
         } else {
             placenode(
                 node1,
                 allnodes.find((node) => node.id === node2.rchildid) as Node,
             );
-            recalculate_positions();
+            wait(0.5).then(() => recalculate_positions());
         }
     } else {
-        recalculate_positions();
+            wait(0.5).then(() => recalculate_positions());
         return;
     }
 }
@@ -1160,8 +1181,8 @@ export function push(nodeinputvalue: number) {
     let node = {
         id: id,
         val: nodeinputvalue,
-        x: 500,
-        y: 500,
+        x: 700,
+        y: 35,
         parentid: null,
         lchildid: null,
         rchildid: null,
@@ -1173,18 +1194,12 @@ export function push(nodeinputvalue: number) {
         allnodes.push(node);
     } else {
         placenode(node, getroot() as Node);
-        let parent = getparent(node)
-        if (parent != undefined) {
-            node.y = parent.y + 125
-        } else {
-            node.y = i[1]
-        }
 
         allnodes.push(node);
     }
     console.log("node id: " + node.id + " pushed")
     console.log($state.snapshot(allnodes));
-    comparecolours(node)
-    recalculate_positions();
-    wait(1).then(() => button = false);
+    wait(0.25).then(() => comparecolours(node));
+    wait(0.5).then(() => recalculate_positions());
+    wait(3).then(() => button = false);
 }

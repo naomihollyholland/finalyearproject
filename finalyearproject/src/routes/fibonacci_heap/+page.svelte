@@ -15,7 +15,6 @@
             }
         }
 
-        clearlines();
         setTimeout(function () {
             drawlines();
         }, 1000);
