@@ -50,12 +50,10 @@ export function recalculate_positions() {
         // if the node has a balance of greater than two, it is right heavy, so needs its right child left rotated
         getbalances(node)
         if (node.balance >= 2) {
-            console.log("left rotation on node: " + node.id)
             leftrotation(node)
         }
         // if the node has a balance of less than negative two, it is left heavy, so needs its left child right rotated
         if (node.balance <= -2) {
-            console.log("right rotation on node: " + node.id)
             rightrotation(node)
 
         }
@@ -147,20 +145,21 @@ export function reevaluate_coordinate(node: Node) {
 
 
 export function searchwithnode(node: Node, nodevalue: number) {
+    log = ">Checking node with value " + node.val + ".<br>" + log
     if (nodevalue == node.val) {
-        log += "<br> Node found! id is: " + node.val
+        log = ">Node found! id is " + node.val + ".<br>" + log
         return;
     } else if (nodevalue < node.val) {
-        log += "<br> value is less than node, checking left subtree."
+        log = ">Value is less than node, checking left subtree.<br>" + log
         let leftchild = getleftchild(node)
         if (leftchild != undefined) {
             searchwithnode(leftchild, nodevalue)
         } else {
-            log += "<br> subtree does not exist! node could not be found."
+            log = ">Subtree does not exist! Node could not be found.<br>" + log
         }
 
     } else if (nodevalue > node.val) {
-        log += "<br> value is greater than node, checking right subtree."
+        log = ">Value is greater than node, checking right subtree.<br>" + log
         let rightchild = getrightchild(node)
         if (rightchild != undefined) {
             searchwithnode(rightchild, nodevalue)
@@ -175,24 +174,25 @@ export function searchfor(nodevalue: number) {
     button = true
     let node = getroot()
     if (node != undefined) {
+        log = ">Checking root node with value " + node.val + ".<br>" + log
         if (nodevalue == node.val) {
-            log += "<br> Node found! id is: " + node.val
+        log = ">Node found! id is " + node.val + ".<br>" + log
         } else if (nodevalue < node.val) {
-            log += "<br> value is less than node, checking left subtree."
+        log = ">Value is less than node, checking left subtree.<br>" + log
             let leftchild = getleftchild(node)
             if (leftchild != undefined) {
                 searchwithnode(leftchild, nodevalue)
             } else {
-                log += "<br> subtree does not exist! node could not be found."
+                log = ">Subtree does not exist! Node could not be found.<br>" + log
             }
 
         } else if (nodevalue > node.val) {
-            log += "<br> value is greater than node, checking right subtree."
+        log = ">Value is greater than node, checking right subtree.<br>" + log
             let rightchild = getrightchild(node)
             if (rightchild != undefined) {
                 searchwithnode(rightchild, nodevalue)
             } else {
-                log += "<br> subtree does not exist! node could not be found."
+                log = ">Subtree does not exist! Node could not be found.<br>" + log
             }
         }
     }
@@ -587,7 +587,7 @@ export function leftrotation(tobeleft: Node) {
 
 export function rightrotation(toberight: Node) {
 
-    log = ">Rotating node with id " + toberight.id + " left.<br>" + log
+    log = ">Rotating node with id " + toberight.id + " right.<br>" + log
     let child = getleftchild(toberight)
     let parent = getparent(toberight)
 
