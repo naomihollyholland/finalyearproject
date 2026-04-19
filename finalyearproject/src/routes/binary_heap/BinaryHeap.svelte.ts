@@ -227,7 +227,7 @@ export function getparent(node1: Node) {
 
 export function heapify() {
 
-    console.log("heapifyin")
+    log = ">Heapifying the binary heap.<br>" + log
     let j = 0
     length = allnodes.length - 1
     console.log(length)
@@ -305,7 +305,7 @@ export function heapify() {
         root.y = i[1]
     }
 
-    console.log("heapified")
+    log = ">Heapified the binary heap!<br>" + log
     console.log($state.snapshot(allnodes))
 }
 
@@ -556,6 +556,7 @@ export function push(nodeinputvalue: number) {
         width: 100,
     };
 
+    log = ">Added a node with id " + node.id + " and value " + node.val + " to the bottom of the heap.<br>" + log
     allnodes.push(node)
 
     let nodepos = allnodes.findIndex((node) => node.id === i)
@@ -581,17 +582,7 @@ export function push(nodeinputvalue: number) {
 
     }
 
-    if(leftchild){
-
-    } else {
-
-    }
-    console.log($state.snapshot(allnodes));
-    console.log("heapifying")
     wait(0.5).then(() => recalculate_positions())
 
-
-    console.log("finished heapifying")
-    console.log($state.snapshot(allnodes));
     wait(3).then(() => button = false);
 }

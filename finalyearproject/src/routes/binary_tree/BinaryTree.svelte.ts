@@ -343,7 +343,7 @@ export function inordersuccessor(node1: Node, isloud: boolean) {
 export function deletenode(node_to_delete: number) {
 
     button = true
-    console.log("node being deleted");
+    log = ">Node with id " + node_to_delete + " is being deleted.<br>" + log
     let node = allnodes.find((node) => node.id === node_to_delete);
     if (node == undefined) {
         return;
@@ -352,8 +352,9 @@ export function deletenode(node_to_delete: number) {
     let swap = getswapcandidate(node);
     let parent = getparent(node);
 
-    //if there is an in order successor
+    //if there is an in order predecessor
     if (swap != null) {
+        log = ">The node being deleted has an in-order predecessor, with id "+ swap.id + ".<br>" + log
         let swapparent = getparent(swap)
         let swapleft = getleftchild(swap)
 
@@ -364,6 +365,7 @@ export function deletenode(node_to_delete: number) {
         }
 
         swapnodes(node, swap);
+        log = ">Swap the node and the predecessor.<br>" + log
         console.log("nodes swapped");
         console.log($state.snapshot(allnodes))
         parent = getparent(node);
@@ -380,6 +382,7 @@ export function deletenode(node_to_delete: number) {
         let index = allnodes.findIndex((node) => node.id === node_to_delete);
 
         allnodes.splice(index, 1);
+        log = ">Delete the node, as it now has either no children or one child.<br>" + log
 
 
         swapparent = getnode(swapparentid)
@@ -402,6 +405,8 @@ export function deletenode(node_to_delete: number) {
 
     if (swap == null) {
         console.log("no in order successor");
+        log = ">The node being deleted does not have an in-order predecessor.<br>" + log
+
         let rightchild = getrightchild(node);
         let leftchild = getleftchild(node)
         parent = getparent(node);
@@ -419,9 +424,12 @@ export function deletenode(node_to_delete: number) {
         } else if (rightchild != undefined && parent == undefined) {
             rightchild.parentid = null;
         }
+        log = ">If the node has a child, it has replaced its parent.<br>" + log
+        log = ">Delete the node.<br>" + log
         let index = allnodes.findIndex(
             (node) => node.id === node_to_delete,
         );
+
 
         allnodes.splice(index, 1);
         console.log($state.snapshot(allnodes));
@@ -483,53 +491,55 @@ export function placenode(node1: Node, node2: Node) {
     }
 }
 
-export function searchwithnode(node:Node, nodevalue:number){
-        if(nodevalue == node.val){
-                log += "<br> Node found! id is: " + node.val
-                return;
-            }else if(nodevalue < node.val) {
-                log += "<br> value is less than node, checking left subtree"
-                let leftchild = getleftchild(node)
-                if(leftchild != undefined){
-                    searchwithnode(leftchild, nodevalue)
-                } else {
-                    log += "<br> subtree does not exist! node could not be found."
-                }
-
-            } else if(nodevalue > node.val) {
-                log += "<br> value is greater than node, checking right subtree"
-                let rightchild = getrightchild(node)
-                if(rightchild != undefined){
-                    searchwithnode(rightchild, nodevalue)
-                } else {
-                    log += "<br> subtree does not exist! node could not be found."
-                }
+export function searchwithnode(node: Node, nodevalue: number) {
+    log = ">Checking node with value " + node.val + ".<br>" + log
+    if (nodevalue == node.val) {
+        log = ">Node found! id is " + node.val + ".<br>" + log
+        return;
+    } else if (nodevalue < node.val) {
+        log = ">Value is less than node, checking left subtree.<br>" + log
+        let leftchild = getleftchild(node)
+        if (leftchild != undefined) {
+            searchwithnode(leftchild, nodevalue)
+        } else {
+            log = ">Subtree does not exist! Node could not be found.<br>" + log
         }
+
+    } else if (nodevalue > node.val) {
+        log = ">Value is greater than node, checking right subtree.<br>" + log
+        let rightchild = getrightchild(node)
+        if (rightchild != undefined) {
+            searchwithnode(rightchild, nodevalue)
+        } else {
+            log += "<br> subtree does not exist! node could not be found."
+        }
+    }
 }
 
-export function searchfor(nodevalue:number){
+export function searchfor(nodevalue: number) {
 
     button = true
     let node = getroot()
-    if(node != undefined){
-        if(nodevalue == node.val){
-            log += "<br> Node found! id is: " + node.val
-        }else if(nodevalue < node.val) {
-            log += "<br> value is less than node, checking left subtree"
+    if (node != undefined) {
+        log = ">Checking root node with value " + node.val + ".<br>" + log
+        if (nodevalue == node.val) {
+        log = ">Node found! id is " + node.val + ".<br>" + log
+        } else if (nodevalue < node.val) {
+        log = ">Value is less than node, checking left subtree.<br>" + log
             let leftchild = getleftchild(node)
-            if(leftchild != undefined){
+            if (leftchild != undefined) {
                 searchwithnode(leftchild, nodevalue)
             } else {
-                log += "<br> subtree does not exist! node could not be found."
+                log = ">Subtree does not exist! Node could not be found.<br>" + log
             }
 
-        } else if(nodevalue > node.val) {
-            log += "<br> value is greater than node, checking right subtree"
+        } else if (nodevalue > node.val) {
+        log = ">Value is greater than node, checking right subtree.<br>" + log
             let rightchild = getrightchild(node)
-            if(rightchild != undefined){
+            if (rightchild != undefined) {
                 searchwithnode(rightchild, nodevalue)
             } else {
-                log += "<br> subtree does not exist! node could not be found."
+                log = ">Subtree does not exist! Node could not be found.<br>" + log
             }
         }
     }
@@ -560,9 +570,11 @@ export function push(nodeinputvalue: number) {
 
     if (allnodes.length < 1) {
         allnodes.push(node);
+        log = ">Added node with id " + node.id + " and value . " + node.val + "<br>" + log
     } else {
         placenode(node, getroot() as Node);
         allnodes.push(node);
+        log = ">Added node with id " + node.id + " and value . " + node.val + "<br>" + log
     }
     console.log($state.snapshot(allnodes));
     wait(0.5).then(() => recalculate_positions());

@@ -176,6 +176,7 @@ export function deletemin() {
     }
 
     console.log("minimum's children adding to the root list")
+    log = ">Adding the children of the minimum node to the root list.<br>" + log
     //add the minimum's children to the root list
     if (min != undefined) {
         let minasnode = getnode(min.id)
@@ -191,6 +192,7 @@ export function deletemin() {
     }
 
     rootnodes.splice(index, 1)
+    log = ">Minimum node " + allnodesid + " deleted.<br>" + log
     let allnodesindex = allnodes.findIndex((node) => node.id === allnodesid);
     if (allnodesindex != -1) {
         allnodes.splice(allnodesindex, 1)
@@ -199,9 +201,12 @@ export function deletemin() {
 
     //make an array with a size equal to the rootnodes size
 
+    log = ">Consolidating the root list to make sure there are no two nodes with the same degree.<br>" + log
+
     let array = Array(rootnodes.length).fill(null)
     console.log($state.snapshot(rootnodes))
 
+    log = ">Creating array for consolidation.<br>" + log
     let rootnodeslength = $state.snapshot(rootnodes.length)
     for (let j = 0; j != rootnodeslength; j += 1) {
         let rootid = rootnodes[j].id
@@ -212,6 +217,7 @@ export function deletemin() {
 
             if (array[itemasnode.degree] == null) {
                 array[itemasnode.degree] = itemasnode.id
+                log = ">Node " + itemasnode.id + " with degree " + itemasnode.degree + " added to the array.<br>" + log
             } else {
 
                 let storednode = getnode(array[itemasnode.degree])
@@ -221,7 +227,9 @@ export function deletemin() {
                     
                     //if there is a conflict with the space the new node will have to fit
                     if(array[itemasnode.degree + 1] != null && storednode != undefined){
+                         log = ">Conflict with node " + storednode.id + " and node " + itemasnode.id + " at degree " + itemasnode.degree + ", performing a union.<br>" + log
                         array[itemasnode.degree] = null
+                        log = ">Clearing the conflicted space in the array.<br>" + log
                         if(storednode.val > itemasnode.val){
                             union(itemasnode, storednode)
                         } else {
@@ -233,8 +241,10 @@ export function deletemin() {
                         rootnodeslength -= 1
                         j -= 1
                         console.log("moving up the chain")
+                        log = ">Iterating upwards, to check if this union causes any conflicts.<br>" + log
                     } else if(storednode != undefined){
                         array[itemasnode.degree] = null
+                        log = ">Performing union of node " + storednode.id + " and node " + itemasnode.id + ".<br>" + log
                         if(storednode.val > itemasnode.val){
                             union(itemasnode, storednode)
                         } else {
@@ -326,7 +336,7 @@ export function getparent(node1: Node) {
 //takes two nodes, changes base's children to include the item toappend
 export function union(base: Node, toappend: Node) {
     canvas.clearlines()
-    console.log("union of: " + base.id + " and " + toappend.id)
+    log = ">Union of node " + base.id + " and node " + toappend.id + ".<br>" + log
     base.degree += 1;
     if (base.children != null) {
         base.children.push(toappend.id)
@@ -414,6 +424,7 @@ export function push(nodeinputvalue: number) {
 
     }
     console.log("node id: " + node.id + " pushed")
+        log = ">node " + node.id + " pushed to the heap, with value " + node.val + "<br>" + log
     console.log($state.snapshot(allnodes));
     wait(0.5).then(() => recalculate_positions());
     wait(3).then(() => button = false);
