@@ -29,17 +29,19 @@
 <canvas id="canvas" height={size[1]} width={size[0]} {@attach makecanvas}>
 </canvas>
 <h1>Binary heap page!</h1>
+
+
 <input bind:value={nodeinputvalue} placeholder="0" type="number" />
-<button onclick={() => push(nodeinputvalue)} disabled={getbutton()}>Add node</button>
+<button onclick={() => push(nodeinputvalue)} disabled={getbutton()}>Add node with value: {nodeinputvalue}</button>
 
 <br />
-<button onclick={() => deleteMin()} disabled={getbutton()}>delete node</button>
+<button onclick={() => deleteMin()} disabled={getbutton()}>Delete minimum node</button>
 
 
 <br />
 <input bind:value={nodetodecrease} placeholder="0" type="number" />
 <input bind:value={decreaseto} placeholder="0" type="number" />
-<button onclick={() => decreasekey(nodetodecrease, decreaseto)} disabled={getbutton()}>decrease key of node to</button>
+<button onclick={() => decreasekey(nodetodecrease, decreaseto)} disabled={getbutton()}>Decrease key of node with id: {nodetodecrease} to: {decreaseto}</button>
 
 {#each getNodes() as node (node.id)}
     <TreeNode id={node.id} value={node.val} x={node.x} y={node.y} />
@@ -48,22 +50,41 @@
 <div id="log">
     {@html getlog()}
 </div>
+
+<div id="explanation">
+    Binary heaps are a type of binary tree that maintains the heap property, which states that for a min heap, each parent node must be less than or equal to its children. This property allows binary heaps to efficiently support operations such as insertion, deletion of the minimum element, and decrease key operations. Binary heaps are commonly used in priority queues and algorithms like Dijkstra's shortest path algorithm and heapsort.
+    <br/>Adding an element places it in the next available space in the tree to maintain its binary heap structure, and then the heap property is restored by swapping the new element with its parent 
+    <br/>Deleting the minimum element involves swapping the root element with the last node in the tree, removing the last node, and then swapping the last node down the tree until the heap property is restored.
+    <br/>Decreasing a key involves the same process as adding an element, where the decreased key is swapped up the tree until the heap property is restored.
+</div>
+
+
 <style>
     #canvas {
         position: absolute;
         top: 0px;
         left: 0px;
-        background: linear-gradient(#d896ff, #800080, #660066);
+        background: #708090;
         z-index: -1;
     }
 
     #log{
         width: 300px;
-        height: 100px;
-        background-color: black;
+        height: 300px;
+        background-color: #908070;
         font: arial;
-        color: blanchedalmond;
+        color: black;
         overflow-y: auto;
+        border: 2px solid black;
+    }
+
+    #explanation{
+        width: 300px;
+        background-color: #908070;
+        font: arial;
+        color: black;
+        padding: 10px;
+        border: 2px solid black;
     }
 
 </style>

@@ -33,16 +33,19 @@
 <canvas id="canvas" height={size[1]} width={size[0]} {@attach makecanvas}>
 </canvas>
 <h1>Binary tree page!</h1>
+
+
+
 <input bind:value={nodeinputvalue} placeholder="0" type="number" />
-<button onclick={() => push(nodeinputvalue)} disabled={getbutton()} >Add node</button>
+<button onclick={() => push(nodeinputvalue)} disabled={getbutton()} >Add node with value: {nodeinputvalue}</button>
 
 <br />
 <input bind:value={node_to_delete} placeholder="0" type="number" />
-<button onclick={() => deletenode(node_to_delete)} disabled={getbutton()} >delete node</button>
+<button onclick={() => deletenode(node_to_delete)} disabled={getbutton()} >Delete node with id: {node_to_delete}</button>
 
 <br />
 <input bind:value={node_to_find} placeholder="0" type="number" />
-<button onclick={() => searchfor(node_to_find)} disabled={getbutton()} >Search for node with value:</button>
+<button onclick={() => searchfor(node_to_find)} disabled={getbutton()} >Search for node with value: {node_to_find}</button>
 
 {#each getNodes() as node (node.id)}
     <TreeNode id={node.id} value={node.val} x={node.x} y={node.y} />
@@ -51,22 +54,40 @@
 <div id="log">
     {@html getlog()}
 </div>
+
+<div id="explanation">
+    Binary trees are a type of data structure that consists of nodes and pointers to other nodes. Each node can have at most two children, with the left child having a value less than the parent and the right child having a value greater than the parent. Binary trees are commonly used in computer science for various applications such as searching, sorting, and representing hierarchical data.
+    <br/>Searching for a node in a binary tree involves traversing the tree, starting at the root, and comparing the target value to the value of the current node. if the value is less than the current node, the search continues to the left subtree, otherwise it continues to the right subtree. If it reaches a
+    <br/>leaf node without finding the target value, the search is unsuccessful.
+    <br/>Adding a node to a binary tree involves traversal of the tree similar to the search operation to find the correct position. After a leaf node is reached, the new node is added as a child of that leaf node, being either the left or right child depending on the value of the new node compared to the leaf node.
+    <br/>Deleting a node from a binary tree involves three cases, depending on how many children the binary tree has. if the node to delete has no children, it can simply be removed. if it has one child, the child can be promoted to take the place of the node that is to be deleted, and then the node can be removed. If the node to delete has two children, the most similar node to the one being deleted is found, which is either the largest node in the left subtree, or the smallest node in the right subtree. This node then swaps places with the node to be deleted, which produces either one of the first two cases.
+</div>
+
 <style>
     #canvas {
         position: absolute;
         top: 0px;
         left: 0px;
-        background: linear-gradient(#d896ff, #800080, #660066);
+        background:  #708090;
         z-index: -1;
+        
     }
 
     #log{
         width: 300px;
-        height: 100px;
-        background-color: black;
+        height: 300px;
+        background-color: #908070;
         font: arial;
-        color: blanchedalmond;
+        color: black;
         overflow-y: auto;
+        border: 2px solid black;
     }
-
+    #explanation{
+        width: 300px;
+        background-color: #908070;
+        font: arial;
+        color: black;
+        padding: 10px;
+        border: 2px solid black;
+    }
 </style>

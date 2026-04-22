@@ -19,7 +19,7 @@
         width: 100px;
         height: 100px;
         border-radius: 50%;
-        background-color: blueviolet;
+        background-color: #2e343b;
         color: white;
         display: flex;
         justify-content: center;

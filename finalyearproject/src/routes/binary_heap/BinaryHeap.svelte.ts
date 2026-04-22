@@ -490,12 +490,11 @@ export function decreasekey(nodeid: number, number: number) {
     if (node != undefined) {
         if (node.val > number) {
             node.val = number
-            log += "<br> value of node replaced!"
+            log = ">Value of node replaced!<br>" + log
             let parent = getparent(node)
             let check = true
             let tempnodeid = node.id
             while (parent != undefined && check && node != undefined) {
-                log += "<br> node compared to parent!"
                 if (node.val < parent.val && node != undefined) {
                     tempnodeid = node.id
                     swapnodes(node, parent)
@@ -505,9 +504,9 @@ export function decreasekey(nodeid: number, number: number) {
                     } else {
                         check = false
                     }
-                    log += "<br> node is less than parent! swapping and repeating!"
+                    log = ">Node is less than parent, so the comparison repeats with this node and the parent.<br>" + log
                 } else {
-                    log += "<br> node is greater than parent, ending loop!"
+                    log = ">Finished decreasing key.<br>" + log
                     check = false
                 }
 
@@ -538,6 +537,8 @@ export function deleteMin() {
 export function push(nodeinputvalue: number) {
     button = true
     if (!Number.isInteger(nodeinputvalue)) {
+        wait(3).then(() => button = false);
+        log = ">Invalid input. Please enter a valid integer.<br>" + log
         return;
     }
     let i = 0;

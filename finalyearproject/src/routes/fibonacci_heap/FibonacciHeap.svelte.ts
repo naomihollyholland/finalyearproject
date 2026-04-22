@@ -368,7 +368,8 @@ export function union(base: Node, toappend: Node) {
 export function placenode(node1: Node, node2: Node) {
     console.log($state.snapshot(allnodes));
     if (comparenodes(node1, node2) <= 0) {
-    } else {
+    }
+     else {
         wait(0.5).then(() => recalculate_positions());
         return;
     }
@@ -377,6 +378,8 @@ export function placenode(node1: Node, node2: Node) {
 export function push(nodeinputvalue: number) {
     button = true
     if (!Number.isInteger(nodeinputvalue)) {
+        wait(3).then(() => button = false);
+        log = ">Invalid input. Please enter a valid integer.<br>" + log
         return;
     }
     let id = 0;
@@ -424,7 +427,7 @@ export function push(nodeinputvalue: number) {
 
     }
     console.log("node id: " + node.id + " pushed")
-        log = ">node " + node.id + " pushed to the heap, with value " + node.val + "<br>" + log
+        log = ">Added node with id " + node.id + " and value " + node.val + ".<br>" + log
     console.log($state.snapshot(allnodes));
     wait(0.5).then(() => recalculate_positions());
     wait(3).then(() => button = false);

@@ -346,6 +346,8 @@ export function deletenode(node_to_delete: number) {
     log = ">Node with id " + node_to_delete + " is being deleted.<br>" + log
     let node = allnodes.find((node) => node.id === node_to_delete);
     if (node == undefined) {
+        wait(3).then(() => button = false);
+        log = ">Invalid ID. Please enter a valid ID.<br>" + log
         return;
     }
 
@@ -434,6 +436,7 @@ export function deletenode(node_to_delete: number) {
         allnodes.splice(index, 1);
         console.log($state.snapshot(allnodes));
         wait(0.5).then(() => recalculate_positions());
+        wait(3).then(() => button = false);
         return;
     }
 
@@ -551,6 +554,8 @@ export const getbutton = () => button;
 export function push(nodeinputvalue: number) {
     button = true
     if (!Number.isInteger(nodeinputvalue)) {
+        wait(3).then(() => button = false);
+        log = ">Invalid input. Please enter a valid integer.<br>" + log
         return;
     }
     let i = 0;
@@ -570,11 +575,11 @@ export function push(nodeinputvalue: number) {
 
     if (allnodes.length < 1) {
         allnodes.push(node);
-        log = ">Added node with id " + node.id + " and value . " + node.val + "<br>" + log
+        log = ">Added node with id " + node.id + " and value " + node.val + ".<br>" + log
     } else {
         placenode(node, getroot() as Node);
         allnodes.push(node);
-        log = ">Added node with id " + node.id + " and value . " + node.val + "<br>" + log
+        log = ">Added node with id " + node.id + " and value " + node.val + ".<br>" + log
     }
     console.log($state.snapshot(allnodes));
     wait(0.5).then(() => recalculate_positions());

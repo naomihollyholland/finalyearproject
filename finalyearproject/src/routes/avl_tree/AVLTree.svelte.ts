@@ -419,6 +419,8 @@ export function deletenode(node_to_delete: number) {
     log = ">Deleting a node.<br>" + log
     let node = allnodes.find((node) => node.id === node_to_delete);
     if (node == undefined) {
+        wait(3).then(() => button = false);
+        log = ">Invalid ID. Please enter a valid ID.<br>" + log
         return;
     }
 
@@ -678,6 +680,8 @@ async function wait(x: number) {
 export function push(nodeinputvalue: number) {
     button = true
     if (!Number.isInteger(nodeinputvalue)) {
+        wait(3).then(() => button = false);
+        log = ">Invalid input. Please enter a valid integer.<br>" + log
         return;
     }
     let i = 0;
@@ -688,7 +692,7 @@ export function push(nodeinputvalue: number) {
         id: i,
         val: nodeinputvalue,
         x: 700,
-        y: 75,
+        y: 35,
         parentid: null,
         lchildid: null,
         rchildid: null,
