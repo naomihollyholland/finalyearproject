@@ -41,7 +41,8 @@
 <br />
 <input bind:value={nodetodecrease} placeholder="0" type="number" />
 <input bind:value={decreaseto} placeholder="0" type="number" />
-<button onclick={() => decreasekey(nodetodecrease, decreaseto)} disabled={getbutton()}>Decrease key of node with id: {nodetodecrease} to: {decreaseto}</button>
+<button onclick={() => decreasekey(nodetodecrease, decreaseto)} disabled={getbutton()}>
+Decrease id: {nodetodecrease} to: {decreaseto}</button>
 
 {#each getNodes() as node (node.id)}
     <TreeNode id={node.id} value={node.val} x={node.x} y={node.y} />
