@@ -31,18 +31,18 @@
 <h1>Binary heap page!</h1>
 
 
-<input bind:value={nodeinputvalue} placeholder="0" type="number" />
+Value: <input bind:value={nodeinputvalue} placeholder="0" type="number" />
 <button onclick={() => push(nodeinputvalue)} disabled={getbutton()}>Add node with value: {nodeinputvalue}</button>
 
 <br />
-<button onclick={() => deleteMin()} disabled={getbutton()}>Delete minimum node</button>
+Delete: <button onclick={() => deleteMin()} disabled={getbutton()}>Delete minimum node</button>
 
 
 <br />
-<input bind:value={nodetodecrease} placeholder="0" type="number" />
-<input bind:value={decreaseto} placeholder="0" type="number" />
+ID: <input bind:value={nodetodecrease} placeholder="0" type="number" />
+Value: <input bind:value={decreaseto} placeholder="0" type="number" />
 <button onclick={() => decreasekey(nodetodecrease, decreaseto)} disabled={getbutton()}>
-Decrease id: {nodetodecrease} to: {decreaseto}</button>
+Decrease key</button>
 
 {#each getNodes() as node (node.id)}
     <TreeNode id={node.id} value={node.val} x={node.x} y={node.y} />

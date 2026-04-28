@@ -30,7 +30,7 @@ let allnodes: Node[] = $state([
     },
 ]);
 
-let log = $state("hello!")
+let log = $state("Hello! this is the log!<br>As you perform operations, the log will walk through what is happening step by step.<br>Enjoy!<br><br>")
 export const getlog = () => log
 
 export const getNodes = () => allnodes;
@@ -109,21 +109,21 @@ export function recalculate_positions() {
     console.log($state.snapshot(allnodes));
 }
 
+
 export function checklefftoverrun() {
     let max = 0
     for (let node of allnodes) {
-        if ((node.x) < 300) {
-            let newval = Math.abs(node.x - 300)
+        if ((node.x) < 500) {
+            let newval = Math.abs(node.x) - 500
             if (newval > max) {
                 max = newval
             }
         }
     }
-
-    if(max > 0){
+    if (max > 0) {
         max += 50
+        i[0] = i[0] + max
     }
-    i[0] = i[0] + max
 }
 
 
@@ -497,7 +497,7 @@ export function placenode(node1: Node, node2: Node) {
 export function searchwithnode(node: Node, nodevalue: number) {
     log = ">Checking node with value " + node.val + ".<br>" + log
     if (nodevalue == node.val) {
-        log = ">Node found! id is " + node.val + ".<br>" + log
+        log = ">Node found! id is " + node.id + ".<br>" + log
         return;
     } else if (nodevalue < node.val) {
         log = ">Value is less than node, checking left subtree.<br>" + log
@@ -526,7 +526,7 @@ export function searchfor(nodevalue: number) {
     if (node != undefined) {
         log = ">Checking root node with value " + node.val + ".<br>" + log
         if (nodevalue == node.val) {
-        log = ">Node found! id is " + node.val + ".<br>" + log
+        log = ">Node found! id is " + node.id + ".<br>" + log
         } else if (nodevalue < node.val) {
         log = ">Value is less than node, checking left subtree.<br>" + log
             let leftchild = getleftchild(node)

@@ -29,15 +29,16 @@ let allnodes: Node[] = $state([
     },
 ]);
 
-let log = $state("hello!")
+let log = $state("Hello! this is the log!<br>As you perform operations, the log will walk through what is happening step by step.<br>Enjoy!<br><br>")
 export const getlog = () => log
 
 export const getNodes = () => allnodes;
 export const getbutton = () => button;
 
 export function recalculate_positions() {
+    checklefftoverrun()
     console.log("recalculating position")
-    heapify()
+    wait(0.25).then(() => heapify())
     let root = allnodes[0];
 
     canvas.clearlines()
@@ -109,19 +110,16 @@ export function checklefftoverrun() {
     let max = 0
     for (let node of allnodes) {
         if ((node.x) < 500) {
-            let newval = Math.abs(node.x - 500)
+            let newval = Math.abs(node.x) - 500
             if (newval > max) {
                 max = newval
             }
         }
     }
-
     if (max > 0) {
         max += 50
+        i[0] = i[0] + max
     }
-
-
-    i[0] = i[0] + max
 }
 
 export function calculate_widths(node: Node) {
@@ -511,6 +509,8 @@ export function decreasekey(nodeid: number, number: number) {
                 }
 
             }
+        } else {
+            log = ">New value is not less than current value. No change made.<br>" + log
         }
 
     }
@@ -529,7 +529,7 @@ export function deleteMin() {
     button = true
     swapnodes(allnodes[0], allnodes[allnodes.length - 1])
     allnodes.splice(allnodes.length - 1, 1)
-    heapify()
+    wait(0.25).then(() => heapify())
     wait(0.5).then(() => recalculate_positions())
     wait(3).then(() => button = false);
 }
@@ -582,6 +582,7 @@ export function push(nodeinputvalue: number) {
         }
 
     }
+
 
     wait(0.5).then(() => recalculate_positions())
 

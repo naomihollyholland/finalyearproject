@@ -27,11 +27,11 @@
 </canvas>
 <h1>Fibonacci heap page!</h1>
 
-<input bind:value={nodeinputvalue} placeholder="0" type="number" />
+Value: <input bind:value={nodeinputvalue} placeholder="0" type="number" />
 <button onclick={() => push(nodeinputvalue)} disabled={getbutton()}>Add node with value: {nodeinputvalue}</button>
 
 <br />
-<button onclick={() => deletemin()} disabled={getbutton()}>Delete minimum node</button>
+Delete: <button onclick={() => deletemin()} disabled={getbutton()}>Delete minimum node</button>
 
 {#each getNodes() as node (node.id)}
     <TreeNode id={node.id} value={node.val} x={node.x} y={node.y}/>
@@ -43,7 +43,9 @@
 
 <div id="explanation">
     Fibonacci heaps are a type of data structure that consists of a collection of trees, where each tree is a minimum heap. The trees in a Fibonacci heap can have any number of children, and the heap property is maintained across the entire collection.
+    <br/>
     <br/>Adding an element is a very simple operation, and involves adding a new tree, with the new element as its only node, to the collection of trees.
+    <br/>
     <br/>Deleting the minimum element involves finding the tree with the minimum root, adding its subtrees to the collection of trees, and then removing the minimum tree from the collection. After this, the trees are consolidated using a union function. An array is created to keep track of the "degree" of each subtree (the amount of subtrees it has). Then, when a tree has the same degree as another, they are unionised into a single tree, with one tree becoming the child of the other.
 </div>
 

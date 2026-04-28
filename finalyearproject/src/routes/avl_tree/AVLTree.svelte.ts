@@ -17,7 +17,7 @@ export interface Node {
 let i = $state([500, 150]);
 let button = $state(false)
 
-let log = $state("hello!")
+let log = $state("Hello! this is the log!<br>As you perform operations, the log will walk through what is happening step by step.<br>Enjoy!<br><br>")
 export const getlog = () => log
 
 let allnodes: Node[] = $state([
@@ -42,35 +42,22 @@ export function recalculate_positions() {
     console.log($state.snapshot(allnodes))
     let root = getroot();
 
-    wait(3).then(() => checklefftoverrun())
     console.log("after initial update of widths and balances")
     console.log($state.snapshot(allnodes))
 
-    for (let node of allnodes) {
-        // if the node has a balance of greater than two, it is right heavy, so needs its right child left rotated
-        getbalances(node)
-        if (node.balance >= 2) {
-            leftrotation(node)
-        }
-        // if the node has a balance of less than negative two, it is left heavy, so needs its left child right rotated
-        if (node.balance <= -2) {
-            rightrotation(node)
+    rotateifneeded()
 
-        }
-
-    }
-
+    checklefftoverrun()
     console.log("rotations all done:")
     console.log($state.snapshot(allnodes))
 
     root = getroot()
     if (root != undefined) {
-        getbalances(root)
         calculate_widths(root);
         reevaluate_coordinate(root)
 
     }
-    
+
     console.log($state.snapshot(allnodes));
 }
 
@@ -134,10 +121,10 @@ export function reevaluate_coordinate(node: Node) {
 
     let leftchild = getleftchild(node)
     let rightchild = getrightchild(node)
-    if (leftchild != null && leftchild.x != node.x - (node.width / 3.5)) {
+    if (leftchild != null) {
         reevaluate_coordinate(leftchild)
     }
-    if (rightchild != null && rightchild.x != node.x + (node.width / 3.5)) {
+    if (rightchild != null) {
         reevaluate_coordinate(rightchild)
     }
 
@@ -176,9 +163,9 @@ export function searchfor(nodevalue: number) {
     if (node != undefined) {
         log = ">Checking root node with value " + node.val + ".<br>" + log
         if (nodevalue == node.val) {
-        log = ">Node found! id is " + node.val + ".<br>" + log
+            log = ">Node found! id is " + node.val + ".<br>" + log
         } else if (nodevalue < node.val) {
-        log = ">Value is less than node, checking left subtree.<br>" + log
+            log = ">Value is less than node, checking left subtree.<br>" + log
             let leftchild = getleftchild(node)
             if (leftchild != undefined) {
                 searchwithnode(leftchild, nodevalue)
@@ -187,7 +174,7 @@ export function searchfor(nodevalue: number) {
             }
 
         } else if (nodevalue > node.val) {
-        log = ">Value is greater than node, checking right subtree.<br>" + log
+            log = ">Value is greater than node, checking right subtree.<br>" + log
             let rightchild = getrightchild(node)
             if (rightchild != undefined) {
                 searchwithnode(rightchild, nodevalue)
@@ -200,11 +187,12 @@ export function searchfor(nodevalue: number) {
 }
 
 
+
 export function checklefftoverrun() {
     let max = 0
     for (let node of allnodes) {
         if ((node.x) < 500) {
-            let newval = Math.abs(node.x - 500)
+            let newval = Math.abs(node.x) - 500
             if (newval > max) {
                 max = newval
             }
@@ -212,9 +200,8 @@ export function checklefftoverrun() {
     }
     if (max > 0) {
         max += 50
+        i[0] = i[0] + max
     }
-
-    i[0] = i[0] + max
 }
 
 export function calculate_widths(node: Node) {
@@ -469,7 +456,8 @@ export function deletenode(node_to_delete: number) {
             }
         }
         wait(3).then(() => button = false);
-        wait(0.5).then(() => recalculate_positions())
+                    rotateifneeded()
+            wait(0.5).then(() => recalculate_positions())
         console.log($state.snapshot(allnodes));
 
         return;
@@ -500,11 +488,12 @@ export function deletenode(node_to_delete: number) {
         );
 
         allnodes.splice(index, 1);
-
         log = ">Deleted the swapped node, with id " + node.id + ".<br>" + log
-
+                wait(3).then(() => button = false);
         console.log($state.snapshot(allnodes));
-        wait(0.5).then(() => recalculate_positions())
+            rotateifneeded()
+            
+            wait(0.5).then(() => recalculate_positions())
         return;
     }
 
@@ -546,6 +535,28 @@ export function getbalances(node: Node) {
     return largestheight + 1
 
 }
+
+export function rotateifneeded() {
+
+    let root = getroot()
+    if (root != undefined) {
+        getbalances(root)
+    }
+
+    for (let node of allnodes) {
+        // if the node has a balance of greater than two, it is right heavy, so needs its right child left rotated
+        getbalances(node)
+        if (node.balance >= 2) {
+            leftrotation(node)
+        }
+        // if the node has a balance of less than negative two, it is left heavy, so needs its left child right rotated
+        if (node.balance <= -2) {
+            rightrotation(node)
+
+        }
+    }
+}
+
 export function leftrotation(tobeleft: Node) {
 
     log = ">Rotating node with id " + tobeleft.id + " left.<br>" + log
@@ -636,6 +647,8 @@ export function placenode(node1: Node, node2: Node) {
             node2.lchildid = node1.id;
             node1.parentid = node2.id;
             //console.log(node1, node2);
+            rotateifneeded()
+
             wait(0.5).then(() => recalculate_positions())
         } else {
             console.log("finding left child:");
@@ -652,6 +665,8 @@ export function placenode(node1: Node, node2: Node) {
                 node1,
                 allnodes.find((node) => node.id === node2.lchildid) as Node,
             );
+            rotateifneeded()
+
             wait(0.5).then(() => recalculate_positions())
         }
     } else if (comparenodes(node1, node2) > 0) {
@@ -659,15 +674,19 @@ export function placenode(node1: Node, node2: Node) {
             node2.rchildid = node1.id;
             node1.parentid = node2.id;
             //console.log(node1, node2);
+            rotateifneeded()
+
             wait(0.5).then(() => recalculate_positions())
         } else {
             placenode(
                 node1,
                 allnodes.find((node) => node.id === node2.rchildid) as Node,
             );
+            rotateifneeded()
             wait(0.5).then(() => recalculate_positions())
         }
     } else {
+        rotateifneeded()
         wait(0.5).then(() => recalculate_positions())
         return;
     }
@@ -708,6 +727,7 @@ export function push(nodeinputvalue: number) {
     console.log("node id: " + node.id + " pushed")
     console.log($state.snapshot(allnodes));
     log = ">Added a node with id " + node.id + " and value " + node.val + ".<br>" + log
+    rotateifneeded()
     wait(0.5).then(() => recalculate_positions())
     wait(3).then(() => button = false);
 }

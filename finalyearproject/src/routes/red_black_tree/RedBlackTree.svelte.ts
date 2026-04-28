@@ -36,7 +36,7 @@ let allnodes: Node[] = $state([
 
 
 
-let log = $state("hello!")
+let log = $state("Hello! this is the log!<br>As you perform operations, the log will walk through what is happening step by step.<br>Enjoy!<br><br>")
 export const getlog = () => log
 
 export const getNodes = () => allnodes;
@@ -124,32 +124,30 @@ export function reevaluate_coordinate(node: Node) {
 
     let leftchild = getleftchild(node)
     let rightchild = getrightchild(node)
-    if (leftchild != null && leftchild.x != node.x - (node.width / 3.5)) {
+    if (leftchild != null) {
         reevaluate_coordinate(leftchild)
     }
-    if (rightchild != null && rightchild.x != node.x + (node.width / 3.5)) {
+    if (rightchild != null) {
         reevaluate_coordinate(rightchild)
     }
 }
+
 
 
 export function checklefftoverrun() {
     let max = 0
     for (let node of allnodes) {
         if ((node.x) < 500) {
-            let newval = Math.abs(node.x - 500)
+            let newval = Math.abs(node.x) - 500
             if (newval > max) {
                 max = newval
             }
         }
     }
-
     if (max > 0) {
         max += 50
+        i[0] = i[0] + max
     }
-
-
-    i[0] = i[0] + max
 }
 
 export function comparecolours(node: Node) {

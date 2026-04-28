@@ -18,7 +18,7 @@
         clearlines();
         setTimeout(function () {
             drawlines();
-        }, 1000);
+        }, 2000);
         return [xmax + 150, ymax + 150];
     });
 
@@ -34,15 +34,15 @@
 </canvas>
 <h1>AVL tree page!</h1>
 
-<input bind:value={nodeinputvalue} placeholder="0" type="number" />
+Value: <input bind:value={nodeinputvalue} placeholder="0" type="number" />
 <button onclick={() => push(nodeinputvalue)} disabled={getbutton()}>Add node with value: {nodeinputvalue}</button>
 
 <br />
-<input bind:value={node_to_delete} placeholder="0" type="number" />
+ID: <input bind:value={node_to_delete} placeholder="0" type="number" />
 <button onclick={() => deletenode(node_to_delete)} disabled={getbutton()}>Delete node with id: {node_to_delete}</button>
 
 <br />
-<input bind:value={node_to_find} placeholder="0" type="number" />
+Value: <input bind:value={node_to_find} placeholder="0" type="number" />
 <button onclick={() => searchfor(node_to_find)} disabled={getbutton()} >Search for node with value: {node_to_find}</button>
 
 

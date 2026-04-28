@@ -20,7 +20,7 @@ export const makecanvas: Attachment<HTMLCanvasElement> = (element) => {
 
 
 export function clearlines() {
-    wait(0.5).then(() => clearlinesifctx(ctx));
+    wait(0.25).then(() => clearlinesifctx(ctx));
 }
 
 export function clearlinesifctx(ctx: CanvasRenderingContext2D | null) {
@@ -39,13 +39,13 @@ export function drawlines() {
             ctx.lineWidth = 10;
             let leftchild = treestruct.getleftchild(node);
             if (leftchild != undefined) {
-                wait(1.5).then(() => drawlinesifctx(ctx, node.x, node.y, leftchild.x, leftchild.y))
+                wait(1).then(() => drawlinesifctx(ctx, node.x, node.y, leftchild.x, leftchild.y))
             }
 
             //for right child
             let rightchild = treestruct.getrightchild(node);
             if (rightchild != undefined) {
-                wait(1.5).then(() => drawlinesifctx(ctx, node.x, node.y, rightchild.x, rightchild.y))
+                wait(1).then(() => drawlinesifctx(ctx, node.x, node.y, rightchild.x, rightchild.y))
             }
         }
     }
@@ -66,7 +66,7 @@ export function drawparenttoleftchild(node1: Node) {
         ctx.lineWidth = 10;
         let leftchild = treestruct.getleftchild(node1);
         if (leftchild != undefined) {
-                wait(1.5).then(() => drawlinesifctx(ctx, node1.x, node1.y, leftchild.x, leftchild.y))
+                wait(1).then(() => drawlinesifctx(ctx, node1.x, node1.y, leftchild.x, leftchild.y))
         }
     }
 }
@@ -77,7 +77,7 @@ export function drawparenttorightchild(node1: Node) {
         ctx.lineWidth = 10;
         let rightchild = treestruct.getrightchild(node1);
         if (rightchild != undefined) {
-                wait(1.5).then(() => drawlinesifctx(ctx, node1.x, node1.y, rightchild.x, rightchild.y))
+                wait(1).then(() => drawlinesifctx(ctx, node1.x, node1.y, rightchild.x, rightchild.y))
         }
     }
 }
@@ -108,7 +108,7 @@ export function clearleftchildline(node1: Node) {
             ", " +
             node1.y,
         );
-        wait(0.5).then(() => clearlineifctx(ctx, leftpos, node1.y, fin, height));
+        wait(0.25).then(() => clearlineifctx(ctx, leftpos, node1.y, fin, height));
 
     }
 }
@@ -144,7 +144,7 @@ export function clearrightchildline(node1: Node) {
             node1.y,
         );
 
-        wait(0.5).then(() => clearlineifctx(ctx, leftpos, node1.y, fin, height));
+        wait(0.25).then(() => clearlineifctx(ctx, leftpos, node1.y, fin, height));
 
     }
 }

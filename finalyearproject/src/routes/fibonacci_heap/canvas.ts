@@ -31,7 +31,7 @@ export function drawlines() {
                 let rightx = thisroot.x
                 let righty = thisroot.y
 
-                wait(1.5).then(() => drawlinesifctx(ctx, leftx, lefty, rightx, righty))
+                wait(1).then(() => drawlinesifctx(ctx, leftx, lefty, rightx, righty))
             }
             tempstore = thisroot
         }
@@ -54,7 +54,7 @@ export function drawlines() {
                         let childy = childasnode.y
                         let parentx = node.x
                         let parenty = node.y
-                        wait(1.5).then(() => drawlinesifctx(ctx, parentx, parenty, childx, childy))
+                        wait(1).then(() => drawlinesifctx(ctx, parentx, parenty, childx, childy))
                     }
                 }
             }
@@ -88,14 +88,14 @@ export function clearchildlines(node1: Node) {
             fin = node1.width;
         }
         ctx.clearRect(leftpos, node1.y, fin, height);
-        wait(0.5).then(() => clearlineifctx(ctx, leftpos, node1.y, fin, height))
+        wait(0.25).then(() => clearlineifctx(ctx, leftpos, node1.y, fin, height))
         console.log("cleared lines")
     }
 
 }
 
 export function clearlines() {
-    wait(0.5).then(() => clearlinesifctx(ctx));
+    wait(0.25).then(() => clearlinesifctx(ctx));
 }
 
 export function clearlinesifctx(ctx: CanvasRenderingContext2D | null) {
