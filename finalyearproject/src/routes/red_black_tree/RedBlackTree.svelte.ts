@@ -1193,9 +1193,13 @@ export function placenode(node1: Node, node2: Node) {
     }
 }
 
+
+
 async function wait(x: number) {
     return new Promise(resolve => setTimeout(resolve, x * 1000));
 }
+
+
 
 export function push(nodeinputvalue: number) {
     button = true
