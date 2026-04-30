@@ -382,8 +382,6 @@ export function swapnodes(node1: Node, node2: Node) {
     static1.y = node2.y
 
     //swap the nodes
-    console.log("deboog")
-    console.log(node1)
     node1 = static2
     node2 = static1
 
