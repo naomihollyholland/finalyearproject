@@ -385,8 +385,6 @@ export function swapnodes(node1: Node, node2: Node) {
     console.log("deboog")
     console.log(node1)
     node1 = static2
-    console.log(node1)
-    console.log("huh")
     node2 = static1
 
     //but keep the id and value
@@ -401,7 +399,6 @@ export function swapnodes(node1: Node, node2: Node) {
     node2.x = static1x
     node2.y = static1y
 
-    console.log("what now:(")
     console.log(node1)
     console.log(node2)
 

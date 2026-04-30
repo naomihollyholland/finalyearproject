@@ -43,17 +43,7 @@ export const getNodes = () => allnodes;
 export const getbutton = () => button;
 
 export function recalculate_positions() {
-    //console.log("start of recalculation")
-    //console.log($state.snapshot(allnodes))
     let root = getroot();
-
-
-    //console.log("after initial update of widths and balances")
-    //console.log($state.snapshot(allnodes))
-
-
-    //console.log("rotations all done:")
-    //console.log($state.snapshot(allnodes))
 
     root = getroot()
     if (root != undefined) {
@@ -62,7 +52,6 @@ export function recalculate_positions() {
     }
 
     checklefftoverrun()
-    //console.log($state.snapshot(allnodes));
 }
 
 export function reevaluate_coordinate(node: Node) {
